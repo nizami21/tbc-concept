@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'TBCXBold';
+    src: url('./TBCXBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'TBCXMedium';
+    src: url('./TBCXMedium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'TBCXRegular';
+    src: url('./TBCXRegular.woff2') format('woff2');
+}
