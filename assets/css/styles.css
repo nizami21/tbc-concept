@@ -36,8 +36,6 @@
     .header_logo {
         align-items: center;
         display: flex;
-    }
-    .header_logo-link {
         width: 165px;
     }
     .header_menu {
@@ -49,7 +47,6 @@
         margin-right: 20px;
         display: flex;
     }
-    
     .header_menu-toggle {
         font-size: 16px;
         font-weight: 400;
@@ -79,15 +76,25 @@
         line-height: 1.4;
         text-decoration: none;
         transition: color .25s ease-in-out;
+        cursor: pointer;
+    }
+    .arrow_link:hover {
+        color: #3999D0;
     }
     .search_logo {
         justify-content: center;
         align-items: center;
         transition: color .25s;
+        cursor: pointer;
         display: flex;
     }
-    .search_logo:hover {
-        color: #182cc0;
+    .search_logo svg {
+        fill: #555F62; /* Initial color */
+        transition: fill .25s ease-in-out; /* Smooth transition */
+    }
+    
+    .search_logo:hover svg {
+        fill: #3295CE; /* Color on hover */
     }
     .arrow_logo{
         z-index: 2;
@@ -102,7 +109,6 @@
         margin-top: 2px;
         transition: transform .6s ease-out;
         position: relative;
-
     }
     .lang_toggle {
         color: #555f62;
@@ -136,7 +142,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 20px;
+        /* padding: 0 20px; */
     }
 
     .header_logo {
@@ -349,6 +355,10 @@
     }
     
     @media screen and (max-width: 991px) {
+        .header {
+            padding-left: 45px;
+            padding-right: 45px;
+        }
         .header_menu {
             display: none;
         }
@@ -363,6 +373,7 @@
         }
 
     }
+    
     @media (max-width: 767px) {
         .desktop-svg {
             display: none;
@@ -370,6 +381,11 @@
 
         .mobile-svg {
             display: block;
+        }
+
+        .header_logo {
+            width: 36px;
+            flex: none;
         }
     }
 
@@ -383,7 +399,35 @@
         }
     }
     
-
+    @media screen and (max-width: 479px) {
+        .header_container {
+            grid-column-gap: 24px;
+        }
+        .header_buttons {
+            grid-column-gap: 8px;
+            padding-right: 15px;
+        }
+        .header_menu-button {
+            margin-right: 6px;
+        }
+        .header_logo {
+            width: 36px;
+            flex: none;
+        }
+        .header_logo .mobile-svg {
+            justify-content: center;
+            display: flex;
+        }
+        .header {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .arrow-text {
+            font-size: 12px;
+        }
+    }
+    
+    
 
 
             
