@@ -65,4 +65,39 @@ window.onclick = function(event) {
         document.querySelector('.lang_list-wrapper').classList.remove('show');
     }
 };
+document.querySelectorAll('.header_mobile-dropdown-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+        const dropdownContent = this.nextElementSibling.querySelector('.header_mobile-dropdown-list');
+        const dropdownInner = dropdownContent.querySelector('.header_mobile-dropdown-list-inner');
+        
+        if (dropdownContent.style.height && dropdownContent.style.height !== '0px') {
+            dropdownContent.style.height = dropdownContent.scrollHeight + "px";
+            window.getComputedStyle(dropdownContent).height;
+            dropdownContent.style.height = "0px";
+            this.querySelector('.header_mobile-dropdown-arr svg').style.transform = 'rotate(0deg)';
+        } else {
+            // Close any open dropdowns
+            const openDropdowns = document.querySelectorAll('.header_mobile-dropdown-toggle.active');
+            openDropdowns.forEach(openDropdown => {
+                const openDropdownContent = openDropdown.nextElementSibling.querySelector('.header_mobile-dropdown-list');
+                const openDropdownInner = openDropdownContent.querySelector('.header_mobile-dropdown-list-inner');
+                openDropdownContent.style.height = openDropdownInner.scrollHeight + "px";
+                window.getComputedStyle(openDropdownContent).height;
+                openDropdownContent.style.height = "0px";
+                openDropdown.querySelector('.header_mobile-dropdown-arr svg').style.transform = 'rotate(0deg)';
+                openDropdown.classList.remove('active');
+            });
+
+            dropdownContent.style.height = dropdownInner.scrollHeight + "px";
+            this.querySelector('.header_mobile-dropdown-arr svg').style.transform = 'rotate(180deg)';
+            dropdownContent.addEventListener('transitionend', function() {
+                dropdownContent.style.height = 'auto';
+            }, { once: true });
+            this.classList.add('active');
+        }
+    });
+});
+
+
+
 
