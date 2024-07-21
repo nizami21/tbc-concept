@@ -38,3 +38,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+document.querySelector('.lang_toggle').addEventListener('click', function() {
+    document.querySelector('.lang_list-wrapper').classList.toggle('show');
+});
+
+document.querySelector('.lang_list-item').addEventListener('click', function() {
+    const selectedLanguage = this.innerHTML; 
+        
+    const currentLanguage = selectedLanguage.trim() === 'Eng' ? 'Eng' : 'ქარ';
+    const newLanguageText = currentLanguage === 'Eng' ? 'ქარ' : 'Eng';
+
+    const listItem = document.querySelector('.lang_list-item');
+    if (listItem) {
+        listItem.innerHTML = newLanguageText;
+    }
+
+    document.getElementById('selected-language').innerHTML = currentLanguage;
+    //Language change logic goes here. no logic planned yet
+    console.log(`Language changed to: ${currentLanguage}`);
+    document.querySelector('.lang_list-wrapper').classList.remove('show');
+});
+
+window.onclick = function(event) {
+    if (!event.target.closest('.lang_dropdown')) {
+        document.querySelector('.lang_list-wrapper').classList.remove('show');
+    }
+};
+
