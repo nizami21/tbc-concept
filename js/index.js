@@ -3,7 +3,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropdownBG = document.querySelector('.dropdown');
     const headerMenuButton = document.querySelector('.header_menu-button');
     const headerMenuMobile = document.querySelector('.header_menu-mobile');
+    const trigger = document.querySelector(".button-menu_trigger");
+    const buttons = document.querySelector(".buttons");
+    const icon1 = document.querySelector(".icon-1");
+    const icon2 = document.querySelector(".icon-2");
 
+    trigger.addEventListener("click", function () {
+        buttons.classList.toggle("active");
+        if (icon1.style.display === "none") {
+            icon1.style.display = "block";
+            icon2.style.display = "none";
+        } else {
+            icon1.style.display = "none";
+            icon2.style.display = "block";
+        }
+    });
     dropdowns.forEach(dropdown => {
         const toggle = dropdown.querySelector('.header_dropdown-toggle');
 
@@ -30,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 anyActive = true;
             }
         }); 
-
         if (anyActive) {
             dropdownBG.classList.add('active');
         } else {
@@ -94,23 +107,6 @@ document.querySelectorAll('.header_mobile-dropdown-toggle').forEach(toggle => {
                 dropdownContent.style.height = 'auto';
             }, { once: true });
             this.classList.add('active');
-        }
-    });
-});
-document.addEventListener("DOMContentLoaded", function () {
-    const trigger = document.querySelector(".button-menu_trigger");
-    const buttons = document.querySelector(".buttons");
-    const icon1 = document.querySelector(".icon-1");
-    const icon2 = document.querySelector(".icon-2");
-
-    trigger.addEventListener("click", function () {
-        buttons.classList.toggle("active");
-        if (icon1.style.display === "none") {
-            icon1.style.display = "block";
-            icon2.style.display = "none";
-        } else {
-            icon1.style.display = "none";
-            icon2.style.display = "block";
         }
     });
 });
