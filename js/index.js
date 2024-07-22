@@ -97,7 +97,26 @@ document.querySelectorAll('.header_mobile-dropdown-toggle').forEach(toggle => {
         }
     });
 });
+document.addEventListener("DOMContentLoaded", function () {
+    const trigger = document.querySelector(".button-menu_trigger");
+    const buttons = document.querySelector(".buttons");
+    const icon1 = document.querySelector(".icon-1");
+    const icon2 = document.querySelector(".icon-2");
+
+    trigger.addEventListener("click", function () {
+        buttons.classList.toggle("active");
+        if (icon1.style.display === "none") {
+            icon1.style.display = "block";
+            icon2.style.display = "none";
+        } else {
+            icon1.style.display = "none";
+            icon2.style.display = "block";
+        }
+    });
+});
 
 
+
+  
 
 
