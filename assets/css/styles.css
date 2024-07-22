@@ -250,7 +250,6 @@
         transition: transform 0.6s ease-in-out, background 0.3s ease-in-out;
     }
     .header_dropdown-list {
-        z-index: 10;
         display: flex;
         opacity: 0;
         position: absolute;
@@ -259,6 +258,13 @@
         flex-direction: column;
         transition: opacity 0.4s ease-in-out;
         pointer-events: none; 
+    }
+    .header_dropdown.active .header_dropdown-list {
+        opacity: 1;
+        pointer-events: auto;
+        transition-delay: 0.4s;
+        z-index: 100;
+
     }
     .header_dropdown-link {
         color: #555f62;
@@ -270,11 +276,6 @@
     }
     .header_dropdown-link:hover {
         color: #182cc0;
-    }
-    .header_dropdown.active .header_dropdown-list {
-        opacity: 1;
-        pointer-events: auto;
-        transition-delay: 0.4s;
     }
 
     .header_dropdown-list a {
