@@ -1,0 +1,41 @@
+    .section_numbers {
+        padding-top: 60px;
+        padding-bottom: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .padding-global {
+        width: 100%;
+    }
+    .numbers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        width: 100%;
+    }
+    
+    .numbers-item {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 40px 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; 
+        text-align: center; 
+    }
+    
+    .numbers_number {
+        color: #141719;
+        font-size: 44px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    .numbers_text {
+        margin-top: 16px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #555F62;
+    }

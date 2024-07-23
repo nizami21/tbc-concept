@@ -1,0 +1,12 @@
+.section_big-message {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.big-message_text {
+    font-family: 'TBCXMedium', sans-serif;
+    color: #141719;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.5;
+}

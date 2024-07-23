@@ -1,0 +1,109 @@
+.button-menu {
+    user-select: none;
+    z-index: 90;
+    grid-row-gap: 12px;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        display: flex;
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+    }
+    .buttons {
+        display: none;
+        opacity: 0;
+        position: absolute;
+        grid-row-gap: 12px;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        padding-bottom: 68px;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .buttons.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .icon-2 {
+        display: none;
+    }
+    .icon-1, .icon-2 {
+        position: absolute;
+    }
+    .button-menu_trigger .icon svg {
+        fill: #fff;
+    }
+
+    .button-menu_button {
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        background-color: #fff;
+        border: 2px solid #eef1f1;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+        transition: background-color .25s ease-in-out;
+        display: flex;
+    }
+    .button-menu_tooltip {
+        color: #fff;
+        white-space: nowrap;
+        opacity: 0;
+        background-color: #424a4d;
+        height: fit-content;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+        transition: opacity .4s ease-in-out;
+        position: absolute;
+        right: 68px;
+    }
+    .button-menu_tooltip-arrow {
+        flex-direction: row;
+        align-items: center;
+        display: flex;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: auto;
+        right: -6px;
+    }
+    .button-menu_button:hover {
+        background-color: #51A5D5; /* Adjust as needed */
+    }
+    .button-menu_button:hover svg {
+        fill: #fff;
+    }
+    .button-menu_button:hover .button-menu_tooltip {
+        opacity: 1;
+    }
+    .button-menu_trigger {
+        position: relative;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        background-color: #424a4d;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+        transition: background-color .25s ease-in-out;
+        display: flex;
+    }
+    .button-menu_trigger:hover {
+        background-color: rgba(66,74,77,.8);
+        transition: all 0.25s ease-in-out;
+    }
+      
+    .button-menu_trigger .icon {
+        width: 24px;
+        height: 24px;
+        display: block;
+    }    
+
+
+            

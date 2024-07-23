@@ -1,3 +1,7 @@
+import { mockAPICall } from './api.js';
+
+const apiEndpoint = './assets/data/data.json'
+
 document.addEventListener('DOMContentLoaded', function() {
     const dropdowns = document.querySelectorAll('.header_dropdown');
     const dropdownBG = document.querySelector('.dropdown');
@@ -7,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelector(".buttons");
     const icon1 = document.querySelector(".icon-1");
     const icon2 = document.querySelector(".icon-2");
-
+    
     trigger.addEventListener("click", function () {
         buttons.classList.toggle("active");
         if (icon1.style.display === "none") {
@@ -50,6 +54,26 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdownBG.classList.remove('active');
         }
     }
+    mockAPICall(apiEndpoint)
+    .then(numbers => {
+        if (numbers && numbers.length > 0) {
+            const data = numbers[0];
+            const numberItems = document.querySelectorAll('.numbers-item');
+
+            // Format data.customers to replace commas with spaces
+            numberItems[0].querySelector('.numbers_number').textContent = data.customers.toLocaleString().replace(/,/g, ' ');
+            numberItems[0].querySelector('.numbers_text').textContent = 'მომხმარებელი';
+
+            // Round data.events and data.offers
+            numberItems[1].querySelector('.numbers_number').textContent = Math.round(data.events) + '+';
+            numberItems[1].querySelector('.numbers_text').textContent = 'ღონისძიება';
+
+            numberItems[2].querySelector('.numbers_number').textContent = Math.round(data.offers) + '+';
+            numberItems[2].querySelector('.numbers_text').textContent = 'შეთავაზება';
+        }
+    }).catch(error => {
+        console.error(error);
+    });
 });
 
 document.querySelector('.lang_toggle').addEventListener('click', function() {

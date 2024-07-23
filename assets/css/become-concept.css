@@ -1,0 +1,76 @@
+.heading-wrapper {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+    display: flex;
+}
+
+.concept_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    grid-gap: 30px;
+}
+
+.grid-card {
+    position: relative;
+    min-height: 256px;
+    background-color: #141719;
+    border-radius: 8px;
+    color: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.grid-card-tall {
+    grid-row: span 2;
+}    
+
+.grid-card_content {
+    z-index: 2;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 40px;
+    height: 100%;
+}
+.grid-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    border-radius: 6px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease-in-out;
+}
+
+.grid-image:hover {
+    transform: scale(1.1);
+}
+.grid-card_content .arrow_link .button_text {
+    text-decoration: underline;
+    color: #fff;
+}
+.grid-card_content .arrow_link .button_text:hover {
+    text-decoration: none;
+    color: #92A9AB;
+}
+.grid-card_content .arrow_link .button_icon svg {
+    fill: #fff;
+}
+.grid-card_content .arrow_link .button_icon:hover svg {
+    fill: #fff;
+}
