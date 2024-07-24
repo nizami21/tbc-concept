@@ -7,6 +7,6 @@ export function mockAPICall(endpoint) {
             return response.json();
         })
         .then(data => {
-            return data.numbers;
+            return data;
         });
 }

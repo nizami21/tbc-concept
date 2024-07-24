@@ -3,6 +3,7 @@
     box-sizing: border-box;
 }
 body {
+    overflow-y: scroll;
     color: #555f62;
     background-color: #f9fafa;
     font-family: 'TBCXRegular',sans-serif;

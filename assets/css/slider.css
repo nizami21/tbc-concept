@@ -1,0 +1,102 @@
+.swiper-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+    margin-bottom: 300px;
+}
+
+.swiper-wrapper {
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+    overflow-x: hidden;
+    transition: transform 0.5es ease;
+    gap: 30px;
+    cursor: grab;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+}
+
+.swiper-slide {
+    flex: 0 0 calc(100% / 3 - 28px);
+    min-height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e1e4e5;
+    border-radius: 8px;
+    flex-direction: column;
+    font-size: 14px;
+    text-decoration: none;
+    transition: box-shadow .4s ease-in-out, background-color .4s ease-in-out;
+    display: flex;
+}
+
+.swiper-card-image-wrapper {
+    min-width: 100%;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.swiper-card-image {
+    width: 100%;
+    object-fit: fill;
+    user-select: none;
+}
+
+.swiper-card-content {
+    grid-row-gap: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    display: flex;
+    position: relative;
+}
+
+.tags {
+    color: #6f787b;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.card-title h3 {
+    font-size: 16px;
+}
+
+.swiper-scrollbar {
+    position: absolute;
+    bottom: 0;
+    width: 90%;
+    height: 2px;
+    background: #ddd;
+}
+
+.swiper-scrollbar-drag {
+    height: 100%;
+    background: #182cc0;
+    user-select: none;
+}
+
+.swiper-button {
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.swiper-button-prev {
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+.swiper-button-next {
+    right: 10px;
+    transform: translateY(-50%);
+}

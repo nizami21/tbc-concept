@@ -1,5 +1,12 @@
 {
-    "numbers": [
-        {"customers": 94750, "events": 150, "offers": 130}
-    ]
+    "numbers": {"customers": 94750, "events": 150, "offers": 130},
+    "offers": {
+        "offer1": {"title": "MP დეველოპმენტი - აშშ და ევროს ობლიგაციები", "tags": "ინვესტიციები", "image": "assets/images/mpDevelopment.png", "logo": "assets/images/mpDevelopmentLogo.jpg"},
+        "offer2": {"title": "IVERIA BEACH - დაიბრუნეთ 30%", "tags": "ჯაზ ფესტივალის შეთავაზებები", "image": "assets/images/iveriaBeach.jpg"},
+        "offer3": {"title": "თეგეტა მოტორსი - 50% ფასდაკლება", "tags": "ავტო თეგეტა მოტორსი", "image": "assets/images/tegetaMotors.png", "logo": "assets/images/tegetaMotorsLogo.png"},
+        "offer4": {"title": "თეგეტა მოტორსი - ბათუმი", "tags": "ავტო ჯაზ ფესტივალის შეთავაზებები თეგეტა მოტორსი", "image": "assets/images/tegetaMotorsBatumi.png", "logo": "assets/images/tegetaMotorsLogo.png"},
+        "offer5": {"title": "Le Meridien Batumi – 15%-იანი ფასდაკლება", "tags": "დასვენება ვიზა ჯაზ ფესტივალის შეთავაზებები", "image": "assets/images/laMeridien.png", "logo": "assets/images/meridienLogo.png"},
+        "offer6": {"title": "Colosseum Marina Hotel – 15%-იანი ფასდაკლება", "tags": "დასვენება ვიზა ჯაზ ფესტივალის შეთავაზებები", "image": "assets/images/colosseumHotel.png", "logo": "assets/images/colosseumLogo.png"}
+
+    }
 }

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttons = document.querySelector(".buttons");
     const icon1 = document.querySelector(".icon-1");
     const icon2 = document.querySelector(".icon-2");
-    
+
     trigger.addEventListener("click", function () {
         buttons.classList.toggle("active");
         if (icon1.style.display === "none") {
@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     mockAPICall(apiEndpoint)
-    .then(numbers => {
-        if (numbers && numbers.length > 0) {
-            const data = numbers[0];
+    .then(res => {
+        if (res && res.numbers) {
+            const data = res.numbers;
             const numberItems = document.querySelectorAll('.numbers-item');
 
             // Format data.customers to replace commas with spaces
