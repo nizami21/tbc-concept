@@ -1,4 +1,5 @@
-.swiper-container {
+/* slider container and slides */
+.slider-container {
     width: 100%;
     overflow: hidden;
     position: relative;
@@ -6,46 +7,58 @@
     margin-bottom: 300px;
 }
 
-.swiper-wrapper {
+.slider-wrapper {
     height: 100%;
     display: flex;
     align-items: stretch;
-    overflow-x: hidden;
-    transition: transform 0.5es ease;
-    gap: 30px;
+    gap: 30px; 
     cursor: grab;
     box-sizing: border-box;
     padding-bottom: 30px;
+    will-change: transform;
 }
 
-.swiper-slide {
-    flex: 0 0 calc(100% / 3 - 28px);
+.slider-slide {
+    flex: 0 0 calc(100% / 3 - 30px);
     min-height: 100%;
     box-sizing: border-box;
     border: 1px solid #e1e4e5;
     border-radius: 8px;
     flex-direction: column;
+    cursor: pointer;
     font-size: 14px;
     text-decoration: none;
-    transition: box-shadow .4s ease-in-out, background-color .4s ease-in-out;
+    transition: all 0.3s ease-in-out;
     display: flex;
+    will-change: transform; 
 }
 
-.swiper-card-image-wrapper {
+.slider-card-image-wrapper {
     min-width: 100%;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
-.swiper-card-image {
+.slider-slide:hover .slider-card-image {
+    transform: translateY(-1%);
+}
+
+.slider-card-image {
     width: 100%;
-    object-fit: fill;
+    height: 110%;
+    object-fit: cover; /* Adjusted to maintain aspect ratio */
     user-select: none;
+    transition: transform 0.25s ease-in-out;
 }
 
-.swiper-card-content {
+.slider-slide:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.slider-card-content {
     grid-row-gap: 16px;
     flex-direction: column;
     align-items: flex-start;
@@ -66,37 +79,55 @@
     font-size: 16px;
 }
 
-.swiper-scrollbar {
-    position: absolute;
-    bottom: 0;
+/* Scrollbar styles */
+.slider-scrollbar {
+    align-self: center;
     width: 90%;
     height: 2px;
     background: #ddd;
 }
 
-.swiper-scrollbar-drag {
+.slider-scrollbar-drag {
     height: 100%;
+    max-width: 50%;
+    transition: transform 0.5s ease-in-out;
     background: #182cc0;
     user-select: none;
 }
 
-.swiper-button {
-    position: absolute;
-    top: 50%;
-    width: 30px;
-    height: 30px;
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
+/* Navigation buttons */
+.slider-button {
+    height: 100%;
+    width: 10%;
+    align-self: center;
+    justify-content: center;
+    gap: 16px;
     border: none;
+    display: flex;
+}
+
+.slider-button-next {
+    color: #182cc0; 
+}
+
+.slider-button-prev {
+    color: #BABEBF;
+}
+
+.slider-button-prev,
+.slider-button-next {
     cursor: pointer;
+    padding-top: 6px;
+    visibility: hidden;
+    transition: color 0.3s ease-in-out;
+}
+.slider-button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
-.swiper-button-prev {
-    left: 10px;
-    transform: translateY(-50%);
+.slider-button.disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
-.swiper-button-next {
-    right: 10px;
-    transform: translateY(-50%);
-}

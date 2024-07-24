@@ -1,137 +1,179 @@
-function initializeSwiper() {
-    const swiperContainer = document.querySelector('.swiper-container');
-    const swiperWrapper = document.querySelector('.swiper-wrapper');
-    const prevButton = document.querySelector('.swiper-button-prev');
-    const nextButton = document.querySelector('.swiper-button-next');
-    const scrollbar = document.querySelector('.swiper-scrollbar');
-    const scrollbarDrag = document.querySelector('.swiper-scrollbar-drag');
+function initializeslider() {
+    const sliderContainer = document.querySelector('.slider-container');
+    const sliderWrapper = document.querySelector('.slider-wrapper');
+    const prevButton = document.querySelector('.slider-button-prev');
+    const nextButton = document.querySelector('.slider-button-next');
+    const scrollbar = document.querySelector('.slider-scrollbar');
+    const scrollbarDrag = document.querySelector('.slider-scrollbar-drag');
 
     let isDragging = false;
-    let startX, scrollLeft;
-    let snapInterval = 100; // Adjust the snapping interval as needed
+    let startX, startTransform;
+    const slideWidth = sliderContainer.offsetWidth / 3;
 
     function handleDrag(e) {
         if (!isDragging) return;
         e.preventDefault();
         const x = e.pageX || e.touches[0].pageX;
-        const walk = (x - startX) * 2; // Adjust the scroll speed here
-        swiperWrapper.scrollLeft = scrollLeft - walk;
+        const walk = x - startX;
+        const newTransform = startTransform + walk;
+        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
         updateScrollbar();
     }
 
     function snapToNearestSlide() {
-        const slideWidth = swiperContainer.offsetWidth / 3;
-        const index = Math.round(swiperWrapper.scrollLeft / slideWidth);
-        const targetScrollLeft = index * slideWidth;
-        
-        swiperWrapper.style.scrollBehavior = 'smooth';
-        swiperWrapper.scrollLeft = targetScrollLeft;
+        const currentTransform = getTransform();
+        const index = Math.round(-currentTransform / slideWidth);
+        const maxIndex = sliderWrapper.children.length - 3; // Adjust if showing a different number of slides
+        const clampedIndex = Math.max(0, Math.min(index, maxIndex));
+        const targetTransform = -clampedIndex * slideWidth;
+
+        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
+        sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
 
         setTimeout(() => {
-            swiperWrapper.style.scrollBehavior = 'auto';
-        }, 500); // Match this duration with the CSS transition
+            sliderWrapper.style.transition = 'none'; // Reset transition
+        }, 600); // Match this duration with the CSS transition
+
         updateScrollbar();
     }
 
+    function getTransform() {
+        const matrix = window.getComputedStyle(sliderWrapper).transform;
+        if (matrix === 'none') return 0;
+        return parseFloat(matrix.split(',')[4]); // Extract translateX value
+    }
+
     // Event listeners for mouse drag
-    swiperWrapper.addEventListener('mousedown', (e) => {
+    sliderWrapper.addEventListener('mousedown', (e) => {
         isDragging = true;
-        startX = e.pageX - swiperWrapper.offsetLeft;
-        scrollLeft = swiperWrapper.scrollLeft;
-        swiperWrapper.addEventListener('mousemove', handleDrag);
+        startX = e.pageX;
+        startTransform = getTransform();
+        sliderWrapper.addEventListener('mousemove', handleDrag);
+        prevButton.style.visibility = 'visible';
+        nextButton.style.visibility = 'visible';
+        prevButton.style.opacity = '1';
+        nextButton.style.opacity = '1';
     });
 
-    swiperWrapper.addEventListener('mouseleave', () => {
+    sliderWrapper.addEventListener('mouseleave', () => {
         if (isDragging) {
             isDragging = false;
-            swiperWrapper.removeEventListener('mousemove', handleDrag);
+            sliderWrapper.removeEventListener('mousemove', handleDrag);
             snapToNearestSlide();
         }
     });
 
-    swiperWrapper.addEventListener('mouseup', () => {
+    sliderWrapper.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
-            swiperWrapper.removeEventListener('mousemove', handleDrag);
+            sliderWrapper.removeEventListener('mousemove', handleDrag);
             snapToNearestSlide();
         }
     });
 
     // Event listeners for touch drag
-    swiperWrapper.addEventListener('touchstart', (e) => {
+    sliderWrapper.addEventListener('touchstart', (e) => {
         isDragging = true;
-        startX = e.touches[0].pageX - swiperWrapper.offsetLeft;
-        scrollLeft = swiperWrapper.scrollLeft;
-        swiperWrapper.addEventListener('touchmove', handleDrag);
+        startX = e.touches[0].pageX;
+        startTransform = getTransform();
+        sliderWrapper.addEventListener('touchmove', handleDrag);
     });
 
-    swiperWrapper.addEventListener('touchend', () => {
+    sliderWrapper.addEventListener('touchend', () => {
         if (isDragging) {
             isDragging = false;
-            swiperWrapper.removeEventListener('touchmove', handleDrag);
+            sliderWrapper.removeEventListener('touchmove', handleDrag);
             snapToNearestSlide();
         }
     });
-
     // Navigation buttons functionality
     prevButton.addEventListener('click', () => {
-        swiperWrapper.scrollLeft -= swiperContainer.offsetWidth;
-        snapToNearestSlide();
+        const currentTransform = getTransform();
+        const newTransform = currentTransform + slideWidth;
+        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
+        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
+        nextButton.style.color = '#182cc0';
+        prevButton.style.color = '#BABEBF';
+        setTimeout(() => {
+            snapToNearestSlide();
+        }, 600)
     });
-
+    
     nextButton.addEventListener('click', () => {
-        swiperWrapper.scrollLeft += swiperContainer.offsetWidth;
-        snapToNearestSlide();
+        const currentTransform = getTransform();
+        const newTransform = currentTransform - slideWidth;
+        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
+        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
+        prevButton.style.color = '#182cc0';
+        nextButton.style.color = '#BABEBF';
+        setTimeout(() => {
+            snapToNearestSlide();
+        }, 600)
     });
 
     // Scrollbar drag functionality
     scrollbar.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        const maxScrollLeft = swiperWrapper.scrollWidth - swiperWrapper.clientWidth;
+        const maxScrollLeft = sliderWrapper.scrollWidth - sliderWrapper.clientWidth;
         const dragWidth = scrollbar.offsetWidth;
         const clickPosition = e.pageX - scrollbar.getBoundingClientRect().left;
         const dragPosition = (clickPosition / dragWidth) * maxScrollLeft;
-        swiperWrapper.scrollLeft = dragPosition;
-        updateScrollbar();
+        sliderWrapper.style.transform = `translate3d(-${dragPosition}px, 0, 0)`;
+
     });
 
-    // Update scrollbar position and width
     function updateScrollbar() {
-        const ratio = swiperWrapper.scrollLeft / (swiperWrapper.scrollWidth - swiperWrapper.clientWidth);
-        scrollbarDrag.style.width = ((swiperWrapper.clientWidth / swiperWrapper.scrollWidth) / 2 )* 100 + '%';
-        scrollbarDrag.style.transform = `translateX(${ratio * (scrollbar.clientWidth - scrollbarDrag.clientWidth)}px)`;
+        const currentTransform = -getTransform();
+        const totalSlides = sliderWrapper.children.length;
+        const visibleSlides = 3; // Number of slides visible at a time
+        const slideWidth = sliderContainer.offsetWidth / visibleSlides;
+        const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth;
+
+        const snapPoints = 4; // Number of snap points
+        const snapInterval = maxScrollLeft / (snapPoints - 1);
+
+        const ratio = Math.round(currentTransform / snapInterval) / (snapPoints - 1);
+        const scrollbarWidth = scrollbar.clientWidth;
+        const scrollbarDragWidth = Math.max((visibleSlides / totalSlides) * scrollbarWidth, 20); // Minimum width for the drag
+
+        // Calculate the drag position and clamp it within bounds
+        const dragPosition = Math.min(Math.max(ratio * (scrollbarWidth - scrollbarDragWidth), 0), scrollbarWidth - scrollbarDragWidth);
+
+        // Update the scrollbar drag position and width
+        scrollbarDrag.style.width = `${scrollbarDragWidth}px`;
+        scrollbarDrag.style.transform = `translateX(${dragPosition}px)`;
     }
 
-    swiperWrapper.addEventListener('scroll', updateScrollbar);
+    sliderWrapper.addEventListener('scroll', updateScrollbar);
     updateScrollbar();
 }
 
-// Fetch data and populate swiper slides
+// Fetch data and populate slider slides
 fetch('./assets/data/data.json')
     .then(response => response.json())
     .then(res => {
         if (res && res.offers) {
             const offers = res.offers;
-            const swiperWrapper = document.querySelector('.swiper-wrapper');
+            const sliderWrapper = document.querySelector('.slider-wrapper');
 
             for (const key in offers) {
                 if (offers.hasOwnProperty(key)) {
                     const offer = offers[key];
                     
-                    // Create swiper slide
-                    const swiperSlide = document.createElement('div');
-                    swiperSlide.classList.add('swiper-slide');
+                    // Create slider slide
+                    const sliderSlide = document.createElement('div');
+                    sliderSlide.classList.add('slider-slide');
 
                     // Create card content
                     const cardImageWrapper = document.createElement('div');
-                    cardImageWrapper.classList.add('swiper-card-image-wrapper');
+                    cardImageWrapper.classList.add('slider-card-image-wrapper');
                     const cardImage = document.createElement('img');
-                    cardImage.classList.add('swiper-card-image');
+                    cardImage.classList.add('slider-card-image');
                     cardImage.src = offer.image;
                     cardImageWrapper.appendChild(cardImage);
 
                     const cardContent = document.createElement('div');
-                    cardContent.classList.add('swiper-card-content');
+                    cardContent.classList.add('slider-card-content');
 
                     const tags = document.createElement('div');
                     tags.classList.add('tags');
@@ -146,14 +188,14 @@ fetch('./assets/data/data.json')
                     cardContent.appendChild(tags);
                     cardContent.appendChild(cardTitle);
 
-                    swiperSlide.appendChild(cardImageWrapper);
-                    swiperSlide.appendChild(cardContent);
-                    swiperWrapper.appendChild(swiperSlide);
+                    sliderSlide.appendChild(cardImageWrapper);
+                    sliderSlide.appendChild(cardContent);
+                    sliderWrapper.appendChild(sliderSlide);
                 }
             }
 
-            // Initialize the swiper after populating the slides
-            initializeSwiper();
+            // Initialize the slider after populating the slides
+            initializeslider();
         }
     }).catch(error => {
         console.error(error);
