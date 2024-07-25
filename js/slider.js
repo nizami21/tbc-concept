@@ -1,10 +1,10 @@
-function initializeslider() {
-    const sliderContainer = document.querySelector('.slider-container');
-    const sliderWrapper = document.querySelector('.slider-wrapper');
-    const prevButton = document.querySelector('.slider-button-prev');
-    const nextButton = document.querySelector('.slider-button-next');
-    const scrollbar = document.querySelector('.slider-scrollbar');
-    const scrollbarDrag = document.querySelector('.slider-scrollbar-drag');
+function initializeSlider(sliderClass, dataKey, cardStructure) {
+    const sliderContainer = document.querySelector(`${sliderClass} .slider-container`);
+    const sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
+    const prevButton = document.querySelector(`${sliderClass} .slider-button-prev`);
+    const nextButton = document.querySelector(`${sliderClass} .slider-button-next`);
+    const scrollbar = document.querySelector(`${sliderClass} .slider-scrollbar`);
+    const scrollbarDrag = document.querySelector(`${sliderClass} .slider-scrollbar-drag`);
 
     let isDragging = false;
     let startX, startTransform;
@@ -23,7 +23,7 @@ function initializeslider() {
     function snapToNearestSlide() {
         const currentTransform = getTransform();
         const index = Math.round(-currentTransform / slideWidth);
-        const maxIndex = sliderWrapper.children.length - 3; // Adjust if showing a different number of slides
+        const maxIndex = sliderWrapper.children.length - 3;
         const clampedIndex = Math.max(0, Math.min(index, maxIndex));
         const targetTransform = -clampedIndex * slideWidth;
 
@@ -31,8 +31,8 @@ function initializeslider() {
         sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
 
         setTimeout(() => {
-            sliderWrapper.style.transition = 'none'; // Reset transition
-        }, 600); // Match this duration with the CSS transition
+            sliderWrapper.style.transition = 'none'; // Remove transition after snapping
+        }, 600);
 
         updateScrollbar();
     }
@@ -45,6 +45,7 @@ function initializeslider() {
 
     // Event listeners for mouse drag
     sliderWrapper.addEventListener('mousedown', (e) => {
+        if (sliderWrapper.children.length <= 3) return; // Disable drag if slides are <= 3
         isDragging = true;
         startX = e.pageX;
         startTransform = getTransform();
@@ -73,6 +74,7 @@ function initializeslider() {
 
     // Event listeners for touch drag
     sliderWrapper.addEventListener('touchstart', (e) => {
+        if (sliderWrapper.children.length <= 3) return; // Disable drag if slides are <= 3
         isDragging = true;
         startX = e.touches[0].pageX;
         startTransform = getTransform();
@@ -86,8 +88,10 @@ function initializeslider() {
             snapToNearestSlide();
         }
     });
+
     // Navigation buttons functionality
     prevButton.addEventListener('click', () => {
+        if (sliderWrapper.children.length <= 3) return; // Disable button if slides are <= 3
         const currentTransform = getTransform();
         const newTransform = currentTransform + slideWidth;
         sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
@@ -100,6 +104,7 @@ function initializeslider() {
     });
     
     nextButton.addEventListener('click', () => {
+        if (sliderWrapper.children.length <= 3) return; // Disable button if slides are <= 3
         const currentTransform = getTransform();
         const newTransform = currentTransform - slideWidth;
         sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
@@ -113,6 +118,7 @@ function initializeslider() {
 
     // Scrollbar drag functionality
     scrollbar.addEventListener('mousedown', (e) => {
+        if (sliderWrapper.children.length <= 3) return; // Disable scrollbar if slides are <= 3
         e.preventDefault();
         const maxScrollLeft = sliderWrapper.scrollWidth - sliderWrapper.clientWidth;
         const dragWidth = scrollbar.offsetWidth;
@@ -123,13 +129,17 @@ function initializeslider() {
     });
 
     function updateScrollbar() {
+        if (sliderWrapper.children.length <= 3) {
+            scrollbar.style.display = 'none'; // Hide scrollbar if slides are <= 3
+            return;
+        }
         const currentTransform = -getTransform();
         const totalSlides = sliderWrapper.children.length;
         const visibleSlides = 3; // Number of slides visible at a time
         const slideWidth = sliderContainer.offsetWidth / visibleSlides;
         const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth;
 
-        const snapPoints = 4; // Number of snap points
+        const snapPoints = 3; // Number of snap points
         const snapInterval = maxScrollLeft / (snapPoints - 1);
 
         const ratio = Math.round(currentTransform / snapInterval) / (snapPoints - 1);
@@ -148,55 +158,91 @@ function initializeslider() {
     updateScrollbar();
 }
 
-// Fetch data and populate slider slides
-fetch('./assets/data/data.json')
-    .then(response => response.json())
-    .then(res => {
-        if (res && res.offers) {
-            const offers = res.offers;
-            const sliderWrapper = document.querySelector('.slider-wrapper');
+// Function to populate slider with offers or products
+function populateSlider(sliderClass, dataKey, cardStructure) {
+    fetch('./assets/data/data.json')
+        .then(response => response.json())
+        .then(res => {
+            if (res && res[dataKey]) {
+                const items = res[dataKey];
+                const sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
 
-            for (const key in offers) {
-                if (offers.hasOwnProperty(key)) {
-                    const offer = offers[key];
-                    
-                    // Create slider slide
-                    const sliderSlide = document.createElement('div');
-                    sliderSlide.classList.add('slider-slide');
+                for (const key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        const item = items[key];
+                        
+                        // Create slider slide
+                        const sliderSlide = document.createElement('div');
+                        sliderSlide.classList.add('slider-slide');
 
-                    // Create card content
-                    const cardImageWrapper = document.createElement('div');
-                    cardImageWrapper.classList.add('slider-card-image-wrapper');
-                    const cardImage = document.createElement('img');
-                    cardImage.classList.add('slider-card-image');
-                    cardImage.src = offer.image;
-                    cardImageWrapper.appendChild(cardImage);
+                        // Create card content
+                        const cardImageWrapper = document.createElement('div');
+                        cardImageWrapper.classList.add('slider-card-image-wrapper');
+                        const cardImage = document.createElement('img');
+                        cardImage.classList.add('slider-card-image');
+                        cardImage.src = item.image;
+                        cardImageWrapper.appendChild(cardImage);
 
-                    const cardContent = document.createElement('div');
-                    cardContent.classList.add('slider-card-content');
+                        const cardContent = document.createElement('div');
+                        cardContent.classList.add('slider-card-content');
 
-                    const tags = document.createElement('div');
-                    tags.classList.add('tags');
-                    tags.textContent = offer.tags;
 
-                    const cardTitle = document.createElement('div');
-                    cardTitle.classList.add('card-title');
-                    const title = document.createElement('h3');
-                    title.textContent = offer.title;
-                    cardTitle.appendChild(title);
 
-                    cardContent.appendChild(tags);
-                    cardContent.appendChild(cardTitle);
+                        // Add about data
+                        if (cardStructure === 'about') {
+                            // Add title
+                            const cardTitle = document.createElement('div');
+                            cardTitle.classList.add('card-title');
+                            const title = document.createElement('h3');
+                            title.textContent = item.title;
+                            cardTitle.appendChild(title);
 
-                    sliderSlide.appendChild(cardImageWrapper);
-                    sliderSlide.appendChild(cardContent);
-                    sliderWrapper.appendChild(sliderSlide);
+                            cardContent.appendChild(cardTitle);
+                            const about = document.createElement('p');
+                            const card_teaser = document.createElement('p');
+                            card_teaser.classList.add('card-teaser');
+                            about.classList.add('card-about');
+                            about.innerHTML = item.about; // Use innerHTML for formatted text
+                            card_teaser.appendChild(about);
+                            cardContent.appendChild(card_teaser);
+                        } else {
+                            // Assuming 'tags' for offers
+                            const tags = document.createElement('div');
+                            tags.classList.add('tags');
+                            tags.textContent = item.tags;
+                            cardContent.appendChild(tags);
+
+                            // Add title
+                            const cardTitle = document.createElement('div');
+                            cardTitle.classList.add('card-title');
+                            const title = document.createElement('h3');
+                            title.textContent = item.title;
+                            cardTitle.appendChild(title);
+
+                            cardContent.appendChild(cardTitle);
+                        }
+
+                        sliderSlide.appendChild(cardImageWrapper);
+                        sliderSlide.appendChild(cardContent);
+                        sliderWrapper.appendChild(sliderSlide);
+                    }
+                }
+
+                // Initialize the slider after populating the slides
+                if (sliderWrapper.children.length <= 3) {
+                    // Hide scrollbar and buttons, disable drag if slides are <= 3
+                    document.querySelector(`${sliderClass} .slider-button-prev`).style.display = 'none';
+                    document.querySelector(`${sliderClass} .slider-button-next`).style.display = 'none';
+                    document.querySelector(`${sliderClass} .slider-scrollbar`).style.display = 'none';
+                } else {
+                    initializeSlider(sliderClass, dataKey, cardStructure);
                 }
             }
+        }).catch(error => {
+            console.error(error);
+        });
+}
 
-            // Initialize the slider after populating the slides
-            initializeslider();
-        }
-    }).catch(error => {
-        console.error(error);
-    });
+// Populate sliders with specific data
+populateSlider('.section_offers', 'offers', 'tags');
+populateSlider('.section_products', 'products', 'about');

@@ -4,7 +4,6 @@
     overflow: hidden;
     position: relative;
     user-select: none;
-    margin-bottom: 300px;
 }
 
 .slider-wrapper {
@@ -37,6 +36,7 @@
     min-width: 100%;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    height: 50%;
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease;
@@ -130,4 +130,12 @@
     pointer-events: none;
     opacity: 0.5;
 }
+.card-teaser {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+}
+
 
