@@ -11,6 +11,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
     let isDragging = false;
     let startX, startTransform;
     let slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
+    const snapThreshold = slideWidth * 0.2; // Threshold for snapping
 
     function calculateVisibleSlides() {
         const containerWidth = sliderContainer.offsetWidth;
@@ -19,49 +20,58 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         return Math.max(1, Math.floor(containerWidth / (cardWidth + gap)));
     }
 
-    window.addEventListener('resize', () => {
+    function updateSlideWidth() {
         slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
-        updateScrollbar();
-        snapToNearestSlide();
-    });
-
+    }
 
     function handleDrag(e) {
         if (!isDragging) return;
         e.preventDefault();
         const x = e.pageX || e.touches[0].pageX;
         const walk = x - startX;
-        const newTransform = startTransform + walk;
-        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
-        updateScrollbar();
+        sliderWrapper.style.transform = `translate3d(${startTransform + walk}px, 0, 0)`;
     }
 
-    function snapToNearestSlide() {
-        const currentTransform = getTransform();
-        const index = Math.round(-currentTransform / slideWidth);
-        const maxIndex = sliderWrapper.children.length - calculateVisibleSlides();
-        const clampedIndex = Math.max(0, Math.min(index, maxIndex));
-        const targetTransform = -clampedIndex * slideWidth;
+    function handleDragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        sliderWrapper.removeEventListener('mousemove', handleDrag);
+        sliderWrapper.removeEventListener('touchmove', handleDrag);
 
-        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
+        const currentTransform = getTransform();
+        const totalSlides = sliderWrapper.children.length;
+        const visibleSlides = calculateVisibleSlides();
+        const maxIndex = totalSlides - visibleSlides;
+        const currentIndex = Math.round(-currentTransform / slideWidth);
+        const clampedIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+        
+        const dragDistance = Math.abs(currentTransform - startTransform);
+        let newIndex = clampedIndex;
+
+        if (dragDistance > snapThreshold) {
+            // Determine snap direction based on drag distance
+            const direction = (currentTransform - startTransform) > 0 ? -1 : 1;
+            newIndex = Math.max(0, Math.min(clampedIndex + direction, maxIndex));
+        }
+
+        console.log(clampedIndex)        
+        const targetTransform = -newIndex * slideWidth;
+        sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
         sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
 
         setTimeout(() => {
-            sliderWrapper.style.transition = 'none'; // Remove transition after snapping
-        }, 600);
-
-        updateScrollbar();
+            sliderWrapper.style.transition = 'none';
+        }, 300);
     }
 
     function getTransform() {
         const matrix = window.getComputedStyle(sliderWrapper).transform;
         if (matrix === 'none') return 0;
-        return parseFloat(matrix.split(',')[4]); // Extract translateX value
+        return parseFloat(matrix.split(',')[4]);
     }
 
-    // Event listeners for mouse drag
     sliderWrapper.addEventListener('mousedown', (e) => {
-        if (sliderWrapper.children.length <= 3) return; // Disable drag if slides are <= 3
+        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
         isDragging = true;
         startX = e.pageX;
         startTransform = getTransform();
@@ -72,69 +82,46 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         nextButton.style.opacity = '1';
     });
 
-    sliderWrapper.addEventListener('mouseleave', () => {
-        if (isDragging) {
-            isDragging = false;
-            sliderWrapper.removeEventListener('mousemove', handleDrag);
-            snapToNearestSlide();
-        }
-    });
+    sliderWrapper.addEventListener('mouseleave', handleDragEnd);
+    sliderWrapper.addEventListener('mouseup', handleDragEnd);
 
-    sliderWrapper.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            sliderWrapper.removeEventListener('mousemove', handleDrag);
-            snapToNearestSlide();
-        }
-    });
-
-    // Event listeners for touch drag
     sliderWrapper.addEventListener('touchstart', (e) => {
-        if (sliderWrapper.children.length <= 3) return; // Disable drag if slides are <= 3
+        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
         isDragging = true;
         startX = e.touches[0].pageX;
         startTransform = getTransform();
         sliderWrapper.addEventListener('touchmove', handleDrag);
     });
 
-    sliderWrapper.addEventListener('touchend', () => {
-        if (isDragging) {
-            isDragging = false;
-            sliderWrapper.removeEventListener('touchmove', handleDrag);
-            snapToNearestSlide();
-        }
-    });
+    sliderWrapper.addEventListener('touchend', handleDragEnd);
 
-    // Navigation buttons functionality
     prevButton.addEventListener('click', () => {
-        if (sliderWrapper.children.length <= 3) return; // Disable button if slides are <= 3
-        const currentTransform = getTransform();
-        const newTransform = currentTransform + slideWidth;
-        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
-        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
-        nextButton.style.color = '#182cc0';
-        prevButton.style.color = '#BABEBF';
-        setTimeout(() => {
-            snapToNearestSlide();
-        }, 600);
+        if (sliderWrapper.children.length <= 3) return;
+        snapToSlide(-1);
     });
 
     nextButton.addEventListener('click', () => {
-        if (sliderWrapper.children.length <= 3) return; // Disable button if slides are <= 3
-        const currentTransform = getTransform();
-        const newTransform = currentTransform - slideWidth;
-        sliderWrapper.style.transition = 'transform 0.6s ease-in-out';
-        sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
-        prevButton.style.color = '#182cc0';
-        nextButton.style.color = '#BABEBF';
-        setTimeout(() => {
-            snapToNearestSlide();
-        }, 600);
+        if (sliderWrapper.children.length <= 3) return;
+        snapToSlide(1);
     });
 
-    // Scrollbar drag functionality
+    function snapToSlide(direction) {
+        const currentTransform = getTransform();
+        const totalSlides = sliderWrapper.children.length;
+        const visibleSlides = calculateVisibleSlides();
+        const maxIndex = totalSlides - visibleSlides;
+        const currentIndex = Math.round(-currentTransform / slideWidth);
+        const newIndex = Math.max(0, Math.min(currentIndex + direction, maxIndex));
+        const targetTransform = -newIndex * slideWidth;
+        sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
+        sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
+        setTimeout(() => {
+            sliderWrapper.style.transition = 'none';
+        }, 300);
+    }
+
     scrollbar.addEventListener('mousedown', (e) => {
-        if (sliderWrapper.children.length <= 3) return; // Disable scrollbar if slides are <= 3
+        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
         e.preventDefault();
         const maxScrollLeft = sliderWrapper.scrollWidth - sliderWrapper.clientWidth;
         const dragWidth = scrollbar.offsetWidth;
@@ -145,39 +132,36 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
     });
 
     function updateScrollbar() {
-        if (sliderWrapper.children.length <= 3) {
-            scrollbar.style.display = 'none'; // Hide scrollbar if slides are <= 3
+        if (sliderWrapper.children.length <= calculateVisibleSlides()) {
+            scrollbar.style.display = 'none';
             return;
         }
         const currentTransform = -getTransform();
         const totalSlides = sliderWrapper.children.length;
-        const visibleSlides = calculateVisibleSlides(); // Number of slides visible at a time
+        const visibleSlides = calculateVisibleSlides();
         const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth;
-
-        const snapPoints = totalSlides - visibleSlides + 1; // Number of snap points
-        const snapInterval = maxScrollLeft / (snapPoints - 1);
-
         const ratio = currentTransform / maxScrollLeft;
         const scrollbarWidth = scrollbar.clientWidth;
-        const scrollbarDragWidth = Math.max((visibleSlides / totalSlides) * scrollbarWidth, 20); // Minimum width for the drag
-
-        // Calculate the drag position and clamp it within bounds
+        const scrollbarDragWidth = Math.max((visibleSlides / totalSlides) * scrollbarWidth, 20);
         const dragPosition = Math.min(Math.max(ratio * (scrollbarWidth - scrollbarDragWidth), 0), scrollbarWidth - scrollbarDragWidth);
-
-        // Update the scrollbar drag position and width
         scrollbarDrag.style.width = `${scrollbarDragWidth}px`;
         scrollbarDrag.style.transform = `translateX(${dragPosition}px)`;
     }
 
     window.addEventListener('resize', () => {
-        slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
+        updateSlideWidth();
         updateScrollbar();
-        snapToNearestSlide();
+        handleDragEnd(); // Trigger snapping on resize to correct position
     });
 
     sliderWrapper.addEventListener('scroll', updateScrollbar);
     updateScrollbar();
 }
+
+
+
+
+
 
 // Function to populate slider with offers or products
 function populateSlider(sliderClass, dataKey, cardStructure) {
@@ -293,7 +277,7 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                         }
 
                         // Initialize the slider after populating the slides
-                        if (sliderWrapper.children.length <= 3) {
+                        if (sliderWrapper.children.length <= 2) {
                             // Hide scrollbar and buttons, disable drag if slides are <= 3
                             document.querySelector(`${sliderClass} .slider-button-prev`).style.display = 'none';
                             document.querySelector(`${sliderClass} .slider-button-next`).style.display = 'none';
