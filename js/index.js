@@ -1,6 +1,6 @@
 import { mockAPICall } from './api.js';
 
-const apiEndpoint = '.assets/data/data.json'
+const apiEndpoint = 'assets/data/data.json'
 
 document.addEventListener('DOMContentLoaded', function () {
     const dropdowns = document.querySelectorAll('.header_dropdown');
