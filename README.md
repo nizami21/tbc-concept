@@ -11,53 +11,63 @@ This project is built using plain JavaScript, HTML, and CSS to deliver a respons
 
 The project is organized as follows:
 
-assets/
-  css/
-    base.css
-    components.css
-    layout.css
-    themes.css
-  data/
-    data.json
-  fonts/
-    fonts.css
-    TBCXRegular.woff2
-    TBCXMedium.woff2
-    TBCXBold.woff2
-  images/
-    appStore.svg
-    colosseumHotel.png
-    colosseumLogo.png
-    conceptGrid1.png
-    conceptGrid2.png
-    conceptGrid3.png
-    dropdownCardsImage.png
-    euromoneyLogo.png
-    getAppImage.png
-    globalFinanceLogo.png
-    googlePlay.svg
-    heroImage.webp
-    homeHero2.png
-    iveriaBeach.jpg
-    laMeridien.png
-    meridienLogo.png
-    mpDevelopmentLogo.jpg
-    mpDevelopment.png
-    tegetaMotorsBatumi.png
-    tegetaMotorsLogo.png
-    tegetaMotors.png
-    theBankerlogo.png
-  locales/
-    en.json
-    ka.json
-favicon.png
-index.html
-js/
-  api.js
-  main.js
-  localization.js
-README.md
-
+.
+├── assets
+│       css
+│   │   become-concept.css
+│   │   ├── big-message.css
+│   │   ├── breakpoints.css
+│   │   ├── buttons-menu.css
+│   │   ├── footer.css
+│   │   ├── get-app.css
+│   │   ├── header.css
+│   │   ├── hero-home.css
+│   │   ├── main.css
+│   │   ├── section-numbers.css
+│   │   ├── slider.css
+│   │   └── styles.css
+│   ├── data
+│   │   └── data.json
+│   ├── fonts
+│   │   ├── fonts.css
+│   │   ├── TBCXBold.woff2
+│   │   ├── TBCXMedium.woff2
+│   │   └── TBCXRegular.woff2
+│   ├── icons
+│   ├── images
+│   │   ├── appStore.svg
+│   │   ├── colosseumHotel.png
+│   │   ├── colosseumLogo.png
+│   │   ├── conceptGrid1.png
+│   │   ├── conceptGrid2.png
+│   │   ├── conceptGrid3.png
+│   │   ├── dropdownCardsImage.png
+│   │   ├── euromoneyLogo.png
+│   │   ├── getAppImage.png
+│   │   ├── globalFinanceLogo.png
+│   │   ├── googlePlay.svg
+│   │   ├── heroImage.webp
+│   │   ├── homeHero2.png
+│   │   ├── iveriaBeach.jpg
+│   │   ├── laMeridien.png
+│   │   ├── meridienLogo.png
+│   │   ├── mpDevelopmentLogo.jpg
+│   │   ├── mpDevelopment.png
+│   │   ├── tegetaMotorsBatumi.png
+│   │   ├── tegetaMotorsLogo.png
+│   │   ├── tegetaMotors.png
+│   │   └── theBankerlogo.png
+│   └── locales
+│   ├── en.json
+│   └── ka.json
+├── favicon.png
+├── index.html
+├── js
+│   ├── api.js
+│   ├── index.js
+│   ├── localization.js
+│   └── slider.js
+└── README.md
 
 ## Setup
 
