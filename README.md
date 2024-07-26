@@ -10,7 +10,7 @@ This project is built using plain JavaScript, HTML, and CSS to deliver a respons
 ## File Structure
 
 The project is organized as follows:
-
+```bash
 .
 ├── assets
 │       css
@@ -68,7 +68,7 @@ The project is organized as follows:
 │   ├── localization.js
 │   └── slider.js
 └── README.md
-
+```
 ## Setup
 
 To set up the project locally, simply download or clone the repository and open `index.html` in your preferred web browser.
