@@ -134,6 +134,45 @@ document.querySelectorAll('.header_mobile-dropdown-toggle').forEach(toggle => {
         }
     });
 });
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdownToggles = document.querySelectorAll('.footer_dropdown-toggle');
+
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            const dropdownContent = this.nextElementSibling; 
+
+            if (dropdownContent && dropdownContent.classList.contains('footer_dropdown-list')) {
+                const isOpen = dropdownContent.style.height && dropdownContent.style.height !== '0px';
+                if (isOpen) {
+                    // Closing
+                    dropdownContent.style.height = dropdownContent.scrollHeight + "px";
+                    window.getComputedStyle(dropdownContent).height; 
+                    dropdownContent.style.height = "0px";
+                    this.querySelector('.footer_dropdown-arrow svg').style.transform = 'rotate(0deg)';
+                } else {
+                    // Closing any open dropdowns
+                    const openDropdowns = document.querySelectorAll('.footer_dropdown-list');
+                    openDropdowns.forEach(openDropdown => {
+                        if (openDropdown !== dropdownContent) {
+                            openDropdown.style.height = openDropdown.scrollHeight + "px";
+                            window.getComputedStyle(openDropdown).height; 
+                            openDropdown.style.height = "0px";
+                            openDropdown.previousElementSibling.querySelector('.footer_dropdown-arrow svg').style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    // Opening current dropdown
+                    dropdownContent.style.height = dropdownContent.scrollHeight + "px";
+                    this.querySelector('.footer_dropdown-arrow svg').style.transform = 'rotate(180deg)';
+                    dropdownContent.addEventListener('transitionend', function() {
+                        dropdownContent.style.height = 'auto';
+                    }, { once: true });
+                }
+            }
+        });
+    });
+});
 
 
 

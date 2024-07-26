@@ -8,7 +8,21 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
 
     let isDragging = false;
     let startX, startTransform;
-    const slideWidth = sliderContainer.offsetWidth / 3;
+    let slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
+
+    function calculateVisibleSlides() {
+        const containerWidth = sliderContainer.offsetWidth;
+        const cardWidth = document.querySelector(`${sliderClass} .slider-slide`).offsetWidth;
+        const gap = parseInt(window.getComputedStyle(sliderWrapper).gap) || 0;
+        return Math.max(1, Math.floor(containerWidth / (cardWidth + gap)));
+    }
+    
+    window.addEventListener('resize', () => {
+        slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
+        updateScrollbar();
+        snapToNearestSlide();
+    });
+    
 
     function handleDrag(e) {
         if (!isDragging) return;
@@ -23,7 +37,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
     function snapToNearestSlide() {
         const currentTransform = getTransform();
         const index = Math.round(-currentTransform / slideWidth);
-        const maxIndex = sliderWrapper.children.length - 3;
+        const maxIndex = sliderWrapper.children.length - calculateVisibleSlides();
         const clampedIndex = Math.max(0, Math.min(index, maxIndex));
         const targetTransform = -clampedIndex * slideWidth;
 
@@ -100,9 +114,9 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         prevButton.style.color = '#BABEBF';
         setTimeout(() => {
             snapToNearestSlide();
-        }, 600)
+        }, 600);
     });
-    
+
     nextButton.addEventListener('click', () => {
         if (sliderWrapper.children.length <= 3) return; // Disable button if slides are <= 3
         const currentTransform = getTransform();
@@ -113,7 +127,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         nextButton.style.color = '#BABEBF';
         setTimeout(() => {
             snapToNearestSlide();
-        }, 600)
+        }, 600);
     });
 
     // Scrollbar drag functionality
@@ -125,7 +139,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         const clickPosition = e.pageX - scrollbar.getBoundingClientRect().left;
         const dragPosition = (clickPosition / dragWidth) * maxScrollLeft;
         sliderWrapper.style.transform = `translate3d(-${dragPosition}px, 0, 0)`;
-
+        updateScrollbar();
     });
 
     function updateScrollbar() {
@@ -135,14 +149,13 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         }
         const currentTransform = -getTransform();
         const totalSlides = sliderWrapper.children.length;
-        const visibleSlides = 3; // Number of slides visible at a time
-        const slideWidth = sliderContainer.offsetWidth / visibleSlides;
+        const visibleSlides = calculateVisibleSlides(); // Number of slides visible at a time
         const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth;
 
-        const snapPoints = 3; // Number of snap points
+        const snapPoints = totalSlides - visibleSlides + 1; // Number of snap points
         const snapInterval = maxScrollLeft / (snapPoints - 1);
 
-        const ratio = Math.round(currentTransform / snapInterval) / (snapPoints - 1);
+        const ratio = currentTransform / maxScrollLeft;
         const scrollbarWidth = scrollbar.clientWidth;
         const scrollbarDragWidth = Math.max((visibleSlides / totalSlides) * scrollbarWidth, 20); // Minimum width for the drag
 
@@ -153,6 +166,12 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         scrollbarDrag.style.width = `${scrollbarDragWidth}px`;
         scrollbarDrag.style.transform = `translateX(${dragPosition}px)`;
     }
+
+    window.addEventListener('resize', () => {
+        slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
+        updateScrollbar();
+        snapToNearestSlide();
+    });
 
     sliderWrapper.addEventListener('scroll', updateScrollbar);
     updateScrollbar();
@@ -170,7 +189,7 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                 for (const key in items) {
                     if (items.hasOwnProperty(key)) {
                         const item = items[key];
-                        
+
                         // Create slider slide
                         const sliderSlide = document.createElement('div');
                         sliderSlide.classList.add('slider-slide');
@@ -186,8 +205,6 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                         const cardContent = document.createElement('div');
                         cardContent.classList.add('slider-card-content');
 
-
-
                         // Add about data
                         if (cardStructure === 'about') {
                             // Add title
@@ -199,13 +216,15 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
 
                             cardContent.appendChild(cardTitle);
                             const about = document.createElement('p');
-                            const card_teaser = document.createElement('p');
-                            card_teaser.classList.add('card-teaser');
+
+                            const cardTeaser = document.createElement('p');
+
+                            cardTeaser.classList.add('card-teaser');
                             about.classList.add('card-about');
                             about.innerHTML = item.about; // Use innerHTML for formatted text
-                            card_teaser.appendChild(about);
-                            cardContent.appendChild(card_teaser);
-                        } else {
+                            cardTeaser.appendChild(about);
+                            cardContent.appendChild(cardTeaser);
+                        } else if (cardStructure === 'tags') {
                             // Assuming 'tags' for offers
                             const tags = document.createElement('div');
                             tags.classList.add('tags');
@@ -220,6 +239,21 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                             cardTitle.appendChild(title);
 
                             cardContent.appendChild(cardTitle);
+                        } else if(cardStructure === 'company') {
+                            // Add title
+                            const cardTitle = document.createElement('div');
+                            cardTitle.classList.add('card-title');
+                            const title = document.createElement('h3');
+                            title.innerHTML = item.title;
+                            cardTitle.appendChild(title);
+
+                            cardContent.appendChild(cardTitle);
+                            // Add company
+
+                            const company = document.createElement('div');
+                            company.classList.add('company');
+                            company.textContent = item.company;
+                            cardContent.appendChild(company);
                         }
 
                         sliderSlide.appendChild(cardImageWrapper);
@@ -227,7 +261,6 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                         sliderWrapper.appendChild(sliderSlide);
                     }
                 }
-
                 // Initialize the slider after populating the slides
                 if (sliderWrapper.children.length <= 3) {
                     // Hide scrollbar and buttons, disable drag if slides are <= 3
@@ -246,3 +279,4 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
 // Populate sliders with specific data
 populateSlider('.section_offers', 'offers', 'tags');
 populateSlider('.section_products', 'products', 'about');
+populateSlider('.section_awards', 'awards', 'company');

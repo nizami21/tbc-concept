@@ -31,6 +31,10 @@ img {
     overflow: clip;
     vertical-align:middle;
 }
+a {
+    color: inherit;
+    font-size: inherit;
+}
 .container {
     width: 100%;
     max-width: 1110px;
