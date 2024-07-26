@@ -182,7 +182,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
 // Function to populate slider with offers or products
 function populateSlider(sliderClass, dataKey, cardStructure) {
     // Load the main data
-    fetch('.assets/data/data.json')
+    fetch('assets/data/data.json')
         .then(response => response.json())
         .then(data => {
             if (data && data[dataKey]) {
