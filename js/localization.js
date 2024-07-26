@@ -7,11 +7,11 @@ export function getUserLanguage() {
 export function mapLanguageFilePath(preferredLanguage) {
     switch (preferredLanguage) {
         case 'Eng':
-            return '/assets/locales/en.json';
+            return 'assets/locales/en.json';
         case 'ქარ':
-            return '/assets/locales/ka.json';
+            return 'assets/locales/ka.json';
         default:
-            return '/assets/locales/ka.json'; // Default fallback
+            return 'assets/locales/ka.json'; // Default fallback
     }
 }
 

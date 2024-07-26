@@ -1,4 +1,4 @@
-import { getUserLanguage, loadLocalization} from './localization.js';
+import { getUserLanguage, loadLocalization } from './localization.js';
 
 function initializeSlider(sliderClass, dataKey, cardStructure) {
     const sliderContainer = document.querySelector(`${sliderClass} .slider-container`);
@@ -18,13 +18,13 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         const gap = parseInt(window.getComputedStyle(sliderWrapper).gap) || 0;
         return Math.max(1, Math.floor(containerWidth / (cardWidth + gap)));
     }
-    
+
     window.addEventListener('resize', () => {
         slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
         updateScrollbar();
         snapToNearestSlide();
     });
-    
+
 
     function handleDrag(e) {
         if (!isDragging) return;
@@ -182,7 +182,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
 // Function to populate slider with offers or products
 function populateSlider(sliderClass, dataKey, cardStructure) {
     // Load the main data
-    fetch('./assets/data/data.json')
+    fetch('.assets/data/data.json')
         .then(response => response.json())
         .then(data => {
             if (data && data[dataKey]) {
@@ -314,12 +314,12 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
         });
 }
 
-  
-  // Helper function to map language code to localization file path
-  function mapLanguageFilePath(language) {
-    return language === 'Eng' ? '/assets/locales/en.json' : '/assets/locales/ka.json';
-  }
-  
+
+// Helper function to map language code to localization file path
+function mapLanguageFilePath(language) {
+    return language === 'Eng' ? 'assets/locales/en.json' : 'assets/locales/ka.json';
+}
+
 // Populate sliders with specific data
 populateSlider('.section_offers', 'offers', 'tags');
 populateSlider('.section_products', 'products', 'about');
