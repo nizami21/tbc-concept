@@ -27,7 +27,7 @@
     font-weight: 700;
 }
 .footer_dropdown-list {
-    height: 0;
+    height: auto;
     overflow: hidden;
     grid-row-gap: 20px;
     flex-direction: column;
@@ -117,7 +117,12 @@
 .footer_contact-item p {
     margin-bottom: 14px;
 }
-
+@media screen and (min-width: 768) {
+    .footer_dropdown-list {
+        height: auto;
+        overflow: hidden;
+    }
+}
 @media screen and (max-width: 767px) {
     .footer_main {
         padding-bottom: 0;
@@ -169,5 +174,9 @@
     .footer_social-link {
         width: 52px;
         height: 52px;
+    }
+    .footer_dropdown-list {
+        height: 0;
+        overflow: hidden;
     }
 }

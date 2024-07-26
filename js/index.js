@@ -62,14 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Format data.customers to replace commas with spaces
             numberItems[0].querySelector('.numbers_number').textContent = data.customers.toLocaleString().replace(/,/g, ' ');
-            numberItems[0].querySelector('.numbers_text').textContent = 'მომხმარებელი';
 
             // Round data.events and data.offers
             numberItems[1].querySelector('.numbers_number').textContent = Math.round(data.events) + '+';
-            numberItems[1].querySelector('.numbers_text').textContent = 'ღონისძიება';
 
             numberItems[2].querySelector('.numbers_number').textContent = Math.round(data.offers) + '+';
-            numberItems[2].querySelector('.numbers_text').textContent = 'შეთავაზება';
         }
     }).catch(error => {
         console.error(error);

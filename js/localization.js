@@ -63,12 +63,13 @@ document.querySelectorAll('.lang_list-item').forEach(item => {
     item.addEventListener('click', function() {
         const newLanguage = this.textContent.trim();
         updateSelectedLanguages(newLanguage);
-  
+        const  numbers = document.querySelectorAll('.numbers');
         // Change language and hide dropdown
         changeLanguage(newLanguage);
         this.parentElement.classList.remove('show'); // Hide the dropdown
         console.log(`Language changed to: ${newLanguage}`);
-        window.location.reload(); // Reload the page to apply changes
+        console.log(`numbers: ${numbers}`);
+        window.location.reload();
     });
 });
   
