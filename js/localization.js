@@ -2,7 +2,7 @@
 export function getUserLanguage() {
     return localStorage.getItem('preferredLanguage') || 'ქარ'; // Default to 'ქარ' if not set
 }
-  
+
 // Function to map preferred language to file path
 export function mapLanguageFilePath(preferredLanguage) {
     switch (preferredLanguage) {
@@ -14,7 +14,7 @@ export function mapLanguageFilePath(preferredLanguage) {
             return '/assets/locales/ka.json'; // Default fallback
     }
 }
-  
+
 // Function to load the localization file based on the selected language
 export function loadLocalization(languageFilePath) {
     return fetch(languageFilePath)
@@ -23,7 +23,7 @@ export function loadLocalization(languageFilePath) {
             console.error('Error loading localization file:', error);
         });
 }
-  
+
 // Function to apply the localization data to the HTML elements
 function applyLocalization(data) {
     document.querySelectorAll('[data-localize]').forEach(element => {
@@ -33,7 +33,7 @@ function applyLocalization(data) {
         }
     });
 }
-  
+
 // Function to handle language changes
 function changeLanguage(preferredLanguage) {
     const languageFilePath = mapLanguageFilePath(preferredLanguage);
@@ -42,7 +42,7 @@ function changeLanguage(preferredLanguage) {
         localStorage.setItem('preferredLanguage', preferredLanguage); // Store the user's preference
     });
 }
-  
+
 // Update both selected-language elements
 function updateSelectedLanguages(newLanguage) {
     document.querySelectorAll('.selected-language').forEach(element => {
@@ -52,18 +52,18 @@ function updateSelectedLanguages(newLanguage) {
 
 // Event listener for dropdown toggle
 document.querySelectorAll('.lang_toggle').forEach(toggle => {
-    toggle.addEventListener('click', function() {
+    toggle.addEventListener('click', function () {
         const langListWrapper = this.nextElementSibling; // Assumes lang_list-wrapper is the next sibling
         langListWrapper.classList.toggle('show');
     });
 });
-  
+
 // Event listener for language item clicks
 document.querySelectorAll('.lang_list-item').forEach(item => {
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function () {
         const newLanguage = this.textContent.trim();
         updateSelectedLanguages(newLanguage);
-        const  numbers = document.querySelectorAll('.numbers');
+        const numbers = document.querySelectorAll('.numbers');
         // Change language and hide dropdown
         changeLanguage(newLanguage);
         this.parentElement.classList.remove('show'); // Hide the dropdown
@@ -72,7 +72,7 @@ document.querySelectorAll('.lang_list-item').forEach(item => {
         window.location.reload();
     });
 });
-  
+
 document.addEventListener('DOMContentLoaded', () => {
     const userLanguage = getUserLanguage();
 
