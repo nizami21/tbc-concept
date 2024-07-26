@@ -76,7 +76,9 @@
         .desktop-svg {
             display: none;
         }
-
+        .eng_logo {
+            display: none;
+        }
         .mobile-svg {
             display: block;
         }
@@ -164,8 +166,10 @@
         .mobile-svg {
             display: none;
         }
-
         .desktop-svg {
+            display: block;
+        }
+        .eng_logo {
             display: block;
         }
     }

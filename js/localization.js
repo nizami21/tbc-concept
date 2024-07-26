@@ -4,7 +4,7 @@ export function getUserLanguage() {
 }
 
 // Function to map preferred language to file path
-export function mapLanguageFilePath(preferredLanguage) {
+function mapLanguageFilePath(preferredLanguage) {
     switch (preferredLanguage) {
         case 'Eng':
             return 'assets/locales/en.json';
@@ -50,29 +50,43 @@ function updateSelectedLanguages(newLanguage) {
     });
 }
 
-// Event listener for dropdown toggle
-document.querySelectorAll('.lang_toggle').forEach(toggle => {
-    toggle.addEventListener('click', function () {
-        const langListWrapper = this.nextElementSibling; // Assumes lang_list-wrapper is the next sibling
-        langListWrapper.classList.toggle('show');
-    });
-});
+function handleResize() {
+    const windowWidth = window.innerWidth;
+    const userLanguage = getUserLanguage();
 
-// Event listener for language item clicks
-document.querySelectorAll('.lang_list-item').forEach(item => {
-    item.addEventListener('click', function () {
-        const newLanguage = this.textContent.trim();
-        updateSelectedLanguages(newLanguage);
-        const numbers = document.querySelectorAll('.numbers');
-        // Change language and hide dropdown
-        changeLanguage(newLanguage);
-        this.parentElement.classList.remove('show'); // Hide the dropdown
-        console.log(`Language changed to: ${newLanguage}`);
-        console.log(`numbers: ${numbers}`);
-        window.location.reload();
-    });
-});
+    // Get all elements with the specific classes
+    const enLogos = document.querySelectorAll('.eng_logo');
+    const kaLogos = document.querySelectorAll('.desktop-svg');
+    const mobileLogos = document.querySelectorAll('.mobile-svg');
 
+    // Loop through each set of elements and apply styles
+    enLogos.forEach(enLogo => {
+        kaLogos.forEach(kaLogo => {
+            mobileLogos.forEach(mobileLogo => {
+                if (windowWidth < 768) {
+                    enLogo.style.display = 'none';
+                    kaLogo.style.display = 'none';
+                    mobileLogo.style.display = 'block';
+                } else {
+                    if (userLanguage === 'Eng') {
+                        enLogo.style.display = 'block';
+                        kaLogo.style.display = 'none';
+                    } else {
+                        enLogo.style.display = 'none';
+                        kaLogo.style.display = 'block';
+                    }
+                    mobileLogo.style.display = 'none';
+                }
+            });
+        });
+    });
+}
+
+
+// Add event listener for window resize
+window.addEventListener('resize', handleResize);
+
+// Call the function once to set the initial state
 document.addEventListener('DOMContentLoaded', () => {
     const userLanguage = getUserLanguage();
 
@@ -90,4 +104,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Apply localization
     changeLanguage(userLanguage);
+
+    // Call handleResize to set initial state
+    handleResize();
+});
+
+// Event listener for dropdown toggle
+document.querySelectorAll('.lang_toggle').forEach(toggle => {
+    toggle.addEventListener('click', function () {
+        const langListWrapper = this.nextElementSibling; // Assumes lang_list-wrapper is the next sibling
+        if (langListWrapper) {
+            langListWrapper.classList.toggle('show');
+        }
+    });
+});
+
+// Event listener for language item clicks
+document.querySelectorAll('.lang_list-item').forEach(item => {
+    item.addEventListener('click', function () {
+        const newLanguage = this.textContent.trim();
+        updateSelectedLanguages(newLanguage);
+        changeLanguage(newLanguage);
+        const langListWrapper = this.parentElement;
+        if (langListWrapper) {
+            langListWrapper.classList.remove('show'); // Hide the dropdown
+        }
+        console.log(`Language changed to: ${newLanguage}`);
+        window.location.reload();
+    });
 });
