@@ -1,3 +1,5 @@
+import { getUserLanguage, loadLocalization} from './localization.js';
+
 function initializeSlider(sliderClass, dataKey, cardStructure) {
     const sliderContainer = document.querySelector(`${sliderClass} .slider-container`);
     const sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
@@ -179,103 +181,145 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
 
 // Function to populate slider with offers or products
 function populateSlider(sliderClass, dataKey, cardStructure) {
+    // Load the main data
     fetch('./assets/data/data.json')
         .then(response => response.json())
-        .then(res => {
-            if (res && res[dataKey]) {
-                const items = res[dataKey];
+        .then(data => {
+            if (data && data[dataKey]) {
+                const items = data[dataKey];
                 const sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
 
-                for (const key in items) {
-                    if (items.hasOwnProperty(key)) {
-                        const item = items[key];
+                // Load localization based on user preference
+                const userLanguage = getUserLanguage();
+                const localizationFilePath = mapLanguageFilePath(userLanguage);
 
-                        // Create slider slide
-                        const sliderSlide = document.createElement('div');
-                        sliderSlide.classList.add('slider-slide');
-
-                        // Create card content
-                        const cardImageWrapper = document.createElement('div');
-                        cardImageWrapper.classList.add('slider-card-image-wrapper');
-                        const cardImage = document.createElement('img');
-                        cardImage.classList.add('slider-card-image');
-                        cardImage.src = item.image;
-                        cardImageWrapper.appendChild(cardImage);
-
-                        const cardContent = document.createElement('div');
-                        cardContent.classList.add('slider-card-content');
-
-                        // Add about data
-                        if (cardStructure === 'about') {
-                            // Add title
-                            const cardTitle = document.createElement('div');
-                            cardTitle.classList.add('card-title');
-                            const title = document.createElement('h3');
-                            title.textContent = item.title;
-                            cardTitle.appendChild(title);
-
-                            cardContent.appendChild(cardTitle);
-                            const about = document.createElement('p');
-
-                            const cardTeaser = document.createElement('p');
-
-                            cardTeaser.classList.add('card-teaser');
-                            about.classList.add('card-about');
-                            about.innerHTML = item.about; // Use innerHTML for formatted text
-                            cardTeaser.appendChild(about);
-                            cardContent.appendChild(cardTeaser);
-                        } else if (cardStructure === 'tags') {
-                            // Assuming 'tags' for offers
-                            const tags = document.createElement('div');
-                            tags.classList.add('tags');
-                            tags.textContent = item.tags;
-                            cardContent.appendChild(tags);
-
-                            // Add title
-                            const cardTitle = document.createElement('div');
-                            cardTitle.classList.add('card-title');
-                            const title = document.createElement('h3');
-                            title.textContent = item.title;
-                            cardTitle.appendChild(title);
-
-                            cardContent.appendChild(cardTitle);
-                        } else if(cardStructure === 'company') {
-                            // Add title
-                            const cardTitle = document.createElement('div');
-                            cardTitle.classList.add('card-title');
-                            const title = document.createElement('h3');
-                            title.innerHTML = item.title;
-                            cardTitle.appendChild(title);
-
-                            cardContent.appendChild(cardTitle);
-                            // Add company
-
-                            const company = document.createElement('div');
-                            company.classList.add('company');
-                            company.textContent = item.company;
-                            cardContent.appendChild(company);
+                loadLocalization(localizationFilePath)
+                    .then(localizationData => {
+                        if (!localizationData) {
+                            console.error('Failed to load localization data.');
+                            return;
                         }
 
-                        sliderSlide.appendChild(cardImageWrapper);
-                        sliderSlide.appendChild(cardContent);
-                        sliderWrapper.appendChild(sliderSlide);
-                    }
-                }
-                // Initialize the slider after populating the slides
-                if (sliderWrapper.children.length <= 3) {
-                    // Hide scrollbar and buttons, disable drag if slides are <= 3
-                    document.querySelector(`${sliderClass} .slider-button-prev`).style.display = 'none';
-                    document.querySelector(`${sliderClass} .slider-button-next`).style.display = 'none';
-                    document.querySelector(`${sliderClass} .slider-scrollbar`).style.display = 'none';
-                } else {
-                    initializeSlider(sliderClass, dataKey, cardStructure);
-                }
+                        // Clear existing slides
+                        sliderWrapper.innerHTML = '';
+
+                        for (const key in items) {
+                            if (items.hasOwnProperty(key)) {
+                                const item = items[key];
+
+                                // Create slider slide
+                                const sliderSlide = document.createElement('div');
+                                sliderSlide.classList.add('slider-slide');
+
+                                // Create card content
+                                const cardImageWrapper = document.createElement('div');
+                                cardImageWrapper.classList.add('slider-card-image-wrapper');
+                                const cardImage = document.createElement('img');
+                                cardImage.classList.add('slider-card-image');
+                                cardImage.src = item.image;
+                                cardImageWrapper.appendChild(cardImage);
+
+                                const cardContent = document.createElement('div');
+                                cardContent.classList.add('slider-card-content');
+
+                                // Add data to card content based on structure
+                                let titleText = item.title;
+                                let aboutText = item.about;
+                                let tagsText = item.tags;
+                                let companyText = item.company;
+
+
+                                // Check if localization data is available for each item
+                                if (localizationData) {
+                                    titleText = localizationData[`${key}.title`] || titleText;
+                                    aboutText = localizationData[`${key}.about`] || aboutText;
+                                    tagsText = localizationData[`${key}.tags`] || tagsText;
+                                    companyText = localizationData[`${key}.company`] || companyText;
+                                }
+
+                                if (cardStructure === 'about') {
+                                    // Add title
+                                    const cardTitle = document.createElement('div');
+                                    cardTitle.classList.add('card-title');
+                                    const title = document.createElement('h3');
+                                    title.textContent = titleText;
+                                    cardTitle.appendChild(title);
+
+                                    cardContent.appendChild(cardTitle);
+
+                                    const about = document.createElement('p');
+                                    const cardTeaser = document.createElement('p');
+                                    cardTeaser.classList.add('card-teaser');
+                                    about.classList.add('card-about');
+                                    about.innerHTML = aboutText; // Use innerHTML for formatted text
+                                    cardTeaser.appendChild(about);
+                                    cardContent.appendChild(cardTeaser);
+                                } else if (cardStructure === 'tags') {
+                                    // Assuming 'tags' for offers
+                                    const tags = document.createElement('div');
+                                    tags.classList.add('tags');
+                                    tags.textContent = tagsText;
+                                    cardContent.appendChild(tags);
+
+                                    // Add title
+                                    const cardTitle = document.createElement('div');
+                                    cardTitle.classList.add('card-title');
+                                    const title = document.createElement('h3');
+                                    title.textContent = titleText;
+                                    cardTitle.appendChild(title);
+
+                                    cardContent.appendChild(cardTitle);
+                                } else if (cardStructure === 'company') {
+                                    // Add title
+                                    const cardTitle = document.createElement('div');
+                                    cardTitle.classList.add('card-title');
+                                    const title = document.createElement('h3');
+                                    title.innerHTML = titleText;
+                                    cardTitle.appendChild(title);
+
+                                    cardContent.appendChild(cardTitle);
+
+                                    // Add company
+                                    const company = document.createElement('div');
+                                    company.classList.add('company');
+                                    company.textContent = companyText;
+                                    cardContent.appendChild(company);
+                                }
+
+                                sliderSlide.appendChild(cardImageWrapper);
+                                sliderSlide.appendChild(cardContent);
+                                sliderWrapper.appendChild(sliderSlide);
+                            }
+                        }
+
+                        // Initialize the slider after populating the slides
+                        if (sliderWrapper.children.length <= 3) {
+                            // Hide scrollbar and buttons, disable drag if slides are <= 3
+                            document.querySelector(`${sliderClass} .slider-button-prev`).style.display = 'none';
+                            document.querySelector(`${sliderClass} .slider-button-next`).style.display = 'none';
+                            document.querySelector(`${sliderClass} .slider-scrollbar`).style.display = 'none';
+                        } else {
+                            initializeSlider(sliderClass, dataKey, cardStructure);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading localization file:', error);
+                    });
+            } else {
+                console.error('Data not found for key:', dataKey);
             }
-        }).catch(error => {
-            console.error(error);
+        })
+        .catch(error => {
+            console.error('Error fetching data.json:', error);
         });
 }
 
+  
+  // Helper function to map language code to localization file path
+  function mapLanguageFilePath(language) {
+    return language === 'Eng' ? '/assets/locales/en.json' : '/assets/locales/ka.json';
+  }
+  
 // Populate sliders with specific data
 populateSlider('.section_offers', 'offers', 'tags');
 populateSlider('.section_products', 'products', 'about');
