@@ -1,9 +1,12 @@
+/* @import url('/assets/fonts/fonts.css'); */
+
 * {
     box-sizing: border-box;
 }
-
+html {
+    scroll-behavior: smooth;
+}
 body {
-    overflow-y: scroll;
     color: #555f62;
     background-color: #f9fafa;
     font-family: 'TBCXRegular', sans-serif;
@@ -13,7 +16,6 @@ body {
     font-weight: 400;
     line-height: 1.7;
 }
-
 h1,
 h2,
 h3 {
@@ -38,6 +40,14 @@ img {
     overflow-clip-margin: content-box;
     overflow: clip;
     vertical-align: middle;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+picture {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 a {

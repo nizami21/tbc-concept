@@ -156,6 +156,65 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    // Enable/Disable submit button based on checkbox state
+    const checkbox = document.getElementById("checkbox-4");
+    const button = document.querySelector(".button");
+    const toggle = document.getElementById("write-to-us")
+    const popup = document.querySelector(".form-popup");
+    const popupInner = document.querySelector(".form-popup_inner");
+    const popupClose = document.querySelector(".popup-close");
+
+    toggle.addEventListener("click", function() {
+        popup.style.display = "block";
+        popupInner.style.display = "block";
+        popup.style.opacity = 1;
+        popupInner.style.opacity = 1;
+        popupInner.style.transition = "opacity 0.5s";
+        popup.style.transition = "opacity 0.5s";
+
+    });
+    popupClose.addEventListener("click", function() {
+        popup.style.display = "none";
+        popupInner.style.display = "none";
+        popup.style.opacity = 0;
+        popupInner.style.opacity = 0;
+    });
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        button.classList.remove("is-disabled");
+        button.disabled = false;
+      } else {
+        button.classList.add("is-disabled");
+        button.disabled = true;
+      }
+    });
+  
+    // Move the label up when the input is focused or contains text
+    const inputs = document.querySelectorAll(".input");
+  
+    inputs.forEach((input) => {
+      const label = document.querySelector(`label[for="${input.id}"]`);
+  
+      if (label) {
+        input.addEventListener("focus", () => {
+          label.classList.add("active");
+        });
+  
+        input.addEventListener("blur", () => {
+          if (input.value === "") {
+            label.classList.remove("active");
+          }
+        });
+  
+        // Ensure label is positioned correctly if input already has value
+        if (input.value !== "") {
+          label.classList.add("active");
+        }
+      }
+    });
+  });
+  
 
 
 

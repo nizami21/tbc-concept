@@ -44,7 +44,7 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         const maxIndex = totalSlides - visibleSlides;
         const currentIndex = Math.round(-currentTransform / slideWidth);
         const clampedIndex = Math.max(0, Math.min(currentIndex, maxIndex));
-        
+
         const dragDistance = Math.abs(currentTransform - startTransform);
         let newIndex = clampedIndex;
 
@@ -54,11 +54,10 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
             newIndex = Math.max(0, Math.min(clampedIndex + direction, maxIndex));
         }
 
-        console.log(clampedIndex)        
         const targetTransform = -newIndex * slideWidth;
         sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
         sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
-
+        updateScrollbar();
         setTimeout(() => {
             sliderWrapper.style.transition = 'none';
         }, 300);
@@ -97,11 +96,17 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
 
     prevButton.addEventListener('click', () => {
         if (sliderWrapper.children.length <= 3) return;
+        updateScrollbar();
+        nextButton.style.color = '#182cc0';
+        prevButton.style.color = '#BABEBF';
         snapToSlide(-1);
     });
 
     nextButton.addEventListener('click', () => {
         if (sliderWrapper.children.length <= 3) return;
+        updateScrollbar();
+        prevButton.style.color = '#182cc0';
+        nextButton.style.color = '#BABEBF';
         snapToSlide(1);
     });
 
@@ -115,26 +120,18 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
         const targetTransform = -newIndex * slideWidth;
         sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
         sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
+        updateScrollbar();
         setTimeout(() => {
             sliderWrapper.style.transition = 'none';
         }, 300);
     }
 
-    scrollbar.addEventListener('mousedown', (e) => {
-        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
-        e.preventDefault();
-        const maxScrollLeft = sliderWrapper.scrollWidth - sliderWrapper.clientWidth;
-        const dragWidth = scrollbar.offsetWidth;
-        const clickPosition = e.pageX - scrollbar.getBoundingClientRect().left;
-        const dragPosition = (clickPosition / dragWidth) * maxScrollLeft;
-        sliderWrapper.style.transform = `translate3d(-${dragPosition}px, 0, 0)`;
-        updateScrollbar();
-    });
-
     function updateScrollbar() {
         if (sliderWrapper.children.length <= calculateVisibleSlides()) {
             scrollbar.style.display = 'none';
             return;
+        } else {
+            scrollbar.style.display = 'block';
         }
         const currentTransform = -getTransform();
         const totalSlides = sliderWrapper.children.length;
@@ -157,9 +154,6 @@ function initializeSlider(sliderClass, dataKey, cardStructure) {
     sliderWrapper.addEventListener('scroll', updateScrollbar);
     updateScrollbar();
 }
-
-
-
 
 
 
