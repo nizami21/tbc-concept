@@ -2,8 +2,19 @@
 
 * {
     box-sizing: border-box;
+    /* debbuging */
+    /* outline: 1px solid red;  */
 }
+
 html {
+    max-width: 100vw;
+    scroll-behavior: smooth !important;
+    overflow-y: scroll;
+}
+html:focus-within {
+    scroll-behavior: smooth;
+}
+body:focus-within {
     scroll-behavior: smooth;
 }
 body {
@@ -12,6 +23,7 @@ body {
     font-family: 'TBCXRegular', sans-serif;
     padding: 0;
     margin: 0;
+    max-width: 100vw;
     font-size: 14px;
     font-weight: 400;
     line-height: 1.7;

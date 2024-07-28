@@ -70,6 +70,10 @@
             grid-row-gap: 30px;
             flex-direction: column;
         }
+        .form-popup_top, .legal_top {
+            padding-left: 45px;
+            padding-right: 45px;
+        }
     }
     
     @media screen and (max-width: 767px) {
@@ -159,6 +163,9 @@
         .section_numbers, .section_offers-swiper {
             padding-top: 40px;
             padding-bottom: 40px;
+        }
+        .form-popup_inner {
+            width: 100%;
         }
     }
 
@@ -254,5 +261,19 @@
         }
         h2 {
             font-size: 14px;
+        }
+        .form-popup_top {
+            padding: 24px 15px;
+        }
+        .popup-close {
+            width: 32px;
+            height: 32px;
+        }
+        .form-popup_form-inner {
+            padding: 32px 15px;
+        }
+        .form-popup_button-wrapper {
+            padding-left: 15px;
+            padding-right: 15px;
         }
     }

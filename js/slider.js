@@ -1,162 +1,216 @@
 import { getUserLanguage, loadLocalization } from './localization.js';
 
-function initializeSlider(sliderClass, dataKey, cardStructure) {
-    const sliderContainer = document.querySelector(`${sliderClass} .slider-container`);
-    const sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
-    const prevButton = document.querySelector(`${sliderClass} .slider-button-prev`);
-    const nextButton = document.querySelector(`${sliderClass} .slider-button-next`);
-    const scrollbar = document.querySelector(`${sliderClass} .slider-scrollbar`);
-    const scrollbarDrag = document.querySelector(`${sliderClass} .slider-scrollbar-drag`);
+const THRESHOLD = 20;
 
-    let isDragging = false;
-    let startX, startTransform;
-    let slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
-    const snapThreshold = slideWidth * 0.2; // Threshold for snapping
+class SwipeSlider {
+  constructor(sliderClass) {
+    this.sliderContainer = document.querySelector(`${sliderClass} .slider-container`);
+    this.sliderWrapper = document.querySelector(`${sliderClass} .slider-wrapper`);
+    this.prevButton = document.querySelector(`${sliderClass} .slider-button-prev`);
+    this.nextButton = document.querySelector(`${sliderClass} .slider-button-next`);
+    this.scrollbar = document.querySelector(`${sliderClass} .slider-scrollbar`);
+    this.scrollbarDrag = document.querySelector(`${sliderClass} .slider-scrollbar-drag`);
+    this.sliderButtons = this.sliderContainer.querySelector(`.slider-button`);
 
-    function calculateVisibleSlides() {
-        const containerWidth = sliderContainer.offsetWidth;
-        const cardWidth = document.querySelector(`${sliderClass} .slider-slide`).offsetWidth;
-        const gap = parseInt(window.getComputedStyle(sliderWrapper).gap) || 0;
-        return Math.max(1, Math.floor(containerWidth / (cardWidth + gap)));
+    if (!this.sliderContainer || !this.sliderWrapper) {
+      console.error("Slider container or wrapper not found.");
+      return;
     }
 
-    function updateSlideWidth() {
-        slideWidth = sliderContainer.offsetWidth / calculateVisibleSlides();
-    }
+    this.startX = 0;
+    this.oldX = 0;
+    this.position = 0;
+    this.snapPosition = 0;
+    this.isDown = false;
+    this.userHasSwiped = false;
+    this.isDragging = false;
+    this.startTransform = 0;
+    this.slideWidth = this.calculateSlideWidth();
 
-    function handleDrag(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX || e.touches[0].pageX;
-        const walk = x - startX;
-        sliderWrapper.style.transform = `translate3d(${startTransform + walk}px, 0, 0)`;
-    }
+    this.attachEventListeners();
+    this.updateUI();
+  }
 
-    function handleDragEnd() {
-        if (!isDragging) return;
-        isDragging = false;
-        sliderWrapper.removeEventListener('mousemove', handleDrag);
-        sliderWrapper.removeEventListener('touchmove', handleDrag);
+  calculateSlideWidth() {
+    const visibleSlides = this.calculateVisibleSlides();
+    return this.sliderContainer.offsetWidth / visibleSlides;
+  }
 
-        const currentTransform = getTransform();
-        const totalSlides = sliderWrapper.children.length;
-        const visibleSlides = calculateVisibleSlides();
-        const maxIndex = totalSlides - visibleSlides;
-        const currentIndex = Math.round(-currentTransform / slideWidth);
-        const clampedIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+  calculateVisibleSlides() {
+    const containerWidth = this.sliderContainer.offsetWidth;
+    const cardWidth = document.querySelector('.slider-slide').offsetWidth;
+    const gap = parseInt(window.getComputedStyle(this.sliderWrapper).gap) || 0;
+    return Math.max(1,containerWidth / (cardWidth + gap));
+  }
 
-        const dragDistance = Math.abs(currentTransform - startTransform);
-        let newIndex = clampedIndex;
-
-        if (dragDistance > snapThreshold) {
-            // Determine snap direction based on drag distance
-            const direction = (currentTransform - startTransform) > 0 ? -1 : 1;
-            newIndex = Math.max(0, Math.min(clampedIndex + direction, maxIndex));
-        }
-
-        const targetTransform = -newIndex * slideWidth;
-        sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
-        sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
-        updateScrollbar();
-        setTimeout(() => {
-            sliderWrapper.style.transition = 'none';
-        }, 300);
-    }
-
-    function getTransform() {
-        const matrix = window.getComputedStyle(sliderWrapper).transform;
-        if (matrix === 'none') return 0;
-        return parseFloat(matrix.split(',')[4]);
-    }
-
-    sliderWrapper.addEventListener('mousedown', (e) => {
-        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
-        isDragging = true;
-        startX = e.pageX;
-        startTransform = getTransform();
-        sliderWrapper.addEventListener('mousemove', handleDrag);
-        prevButton.style.visibility = 'visible';
-        nextButton.style.visibility = 'visible';
-        prevButton.style.opacity = '1';
-        nextButton.style.opacity = '1';
+  attachEventListeners() {
+    this.sliderWrapper.addEventListener('mousedown', (e) => this.handleMouseStart(e));
+    this.sliderWrapper.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+    this.sliderWrapper.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+    this.sliderWrapper.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+    this.sliderWrapper.addEventListener('mouseup', () => this.handleEnd());
+    this.sliderWrapper.addEventListener('mouseleave', () => this.handleEnd());
+    this.sliderWrapper.addEventListener('touchend', () => this.handleEnd());
+    this.prevButton.addEventListener('click', () => {
+      this.snapToSlide(-1);
+      this.prevButton.style.color = '#BABEBF';
+      this.nextButton.style.color = '#182cc0';
     });
-
-    sliderWrapper.addEventListener('mouseleave', handleDragEnd);
-    sliderWrapper.addEventListener('mouseup', handleDragEnd);
-
-    sliderWrapper.addEventListener('touchstart', (e) => {
-        if (sliderWrapper.children.length <= calculateVisibleSlides()) return;
-        isDragging = true;
-        startX = e.touches[0].pageX;
-        startTransform = getTransform();
-        sliderWrapper.addEventListener('touchmove', handleDrag);
+    this.nextButton.addEventListener('click', () => {
+      this.snapToSlide(1);
+      this.nextButton.style.color = '#BABEBF';
+      this.prevButton.style.color = '#182cc0';
     });
-
-    sliderWrapper.addEventListener('touchend', handleDragEnd);
-
-    prevButton.addEventListener('click', () => {
-        if (sliderWrapper.children.length <= 3) return;
-        updateScrollbar();
-        nextButton.style.color = '#182cc0';
-        prevButton.style.color = '#BABEBF';
-        snapToSlide(-1);
-    });
-
-    nextButton.addEventListener('click', () => {
-        if (sliderWrapper.children.length <= 3) return;
-        updateScrollbar();
-        prevButton.style.color = '#182cc0';
-        nextButton.style.color = '#BABEBF';
-        snapToSlide(1);
-    });
-
-    function snapToSlide(direction) {
-        const currentTransform = getTransform();
-        const totalSlides = sliderWrapper.children.length;
-        const visibleSlides = calculateVisibleSlides();
-        const maxIndex = totalSlides - visibleSlides;
-        const currentIndex = Math.round(-currentTransform / slideWidth);
-        const newIndex = Math.max(0, Math.min(currentIndex + direction, maxIndex));
-        const targetTransform = -newIndex * slideWidth;
-        sliderWrapper.style.transition = 'transform 0.3s ease-in-out';
-        sliderWrapper.style.transform = `translate3d(${targetTransform}px, 0, 0)`;
-        updateScrollbar();
-        setTimeout(() => {
-            sliderWrapper.style.transition = 'none';
-        }, 300);
-    }
-
-    function updateScrollbar() {
-        if (sliderWrapper.children.length <= calculateVisibleSlides()) {
-            scrollbar.style.display = 'none';
-            return;
-        } else {
-            scrollbar.style.display = 'block';
-        }
-        const currentTransform = -getTransform();
-        const totalSlides = sliderWrapper.children.length;
-        const visibleSlides = calculateVisibleSlides();
-        const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth;
-        const ratio = currentTransform / maxScrollLeft;
-        const scrollbarWidth = scrollbar.clientWidth;
-        const scrollbarDragWidth = Math.max((visibleSlides / totalSlides) * scrollbarWidth, 20);
-        const dragPosition = Math.min(Math.max(ratio * (scrollbarWidth - scrollbarDragWidth), 0), scrollbarWidth - scrollbarDragWidth);
-        scrollbarDrag.style.width = `${scrollbarDragWidth}px`;
-        scrollbarDrag.style.transform = `translateX(${dragPosition}px)`;
-    }
-
     window.addEventListener('resize', () => {
-        updateSlideWidth();
-        updateScrollbar();
-        handleDragEnd(); // Trigger snapping on resize to correct position
+        this.updateUI();
+        this.rerender();
     });
+  }
 
-    sliderWrapper.addEventListener('scroll', updateScrollbar);
-    updateScrollbar();
+  handleTouchStart(e) {
+    if (e.touches.length > 1) return;
+    this.handleStart(e);
+  }
+
+  handleMouseStart(e) {
+    e.preventDefault();
+    this.handleStart(e);
+  }
+  rerender() {
+    const currentTransform = this.getTransform();
+    const maxTransform = -(this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth);
+    let newTransform = Math.max(currentTransform, maxTransform);
+    newTransform = Math.min(newTransform, 0);
+
+    this.sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
+    this.updateScrollbar(newTransform);
+  }
+  handleStart(e) {
+    if (this.sliderWrapper.children.length <= this.calculateVisibleSlides()) return;
+    this.isDown = true;
+    this.userHasSwiped = false;
+    this.position = this.snapPosition;
+    this.startX = (e.pageX || e.touches[0].pageX) - this.sliderWrapper.offsetLeft;
+
+    this.sliderWrapper.classList.add('active');
+  }
+
+  handleTouchMove(e) {
+    if (e.touches.length > 1) return;
+    this.handleMove(e);
+  }
+
+  handleMouseMove(e) {
+    e.preventDefault();
+    this.handleMove(e);
+  }
+
+  handleMove(e) {
+    this.sliderButtons.style.display = 'flex';
+    if (!this.isDown) return;
+
+    const pageX = e.pageX || e.touches[0].pageX;
+    const currX = pageX - this.sliderWrapper.offsetLeft;
+    const dist = currX - this.startX;
+
+    if (Math.abs(dist) < THRESHOLD) return;
+
+    const swipeNext = this.oldX - currX < 0 ? 0 : 1; // Swipe direction
+    const accelerate = this.mapToRange(Math.abs(dist), THRESHOLD, window.innerWidth, 1, 3);
+    const position = this.calculateBoundaries(this.position + (dist * accelerate));
+
+    e.preventDefault();
+
+    this.userHasSwiped = true;
+    this.snapPosition = this.calculateSnapPosition(position, swipeNext);
+    this.oldX = currX;
+
+    this.moveIndicator(this.snapPosition);
+    this.sliderWrapper.style.transform = `translate3d(${position}px, 0, 0)`;
+  }
+
+  handleEnd() {
+    this.isDown = false;
+    this.sliderWrapper.classList.remove('active');
+    this.sliderWrapper.style.transform = `translate3d(${this.snapPosition}px, 0, 0)`;
+  }
+
+  calculateBoundaries(position, bounce = true) {
+    const bounceMargin = bounce ? this.slideWidth / 4 : 0;
+    const maxAllowedW = -(this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth);
+
+    if (position > bounceMargin) return bounceMargin;
+    if (position < maxAllowedW - bounceMargin) return maxAllowedW - bounceMargin;
+
+    return position;
+  }
+
+  calculateSnapPosition(position, swipeNext) {
+    const maxAllowedW = -(this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth);
+    let snapPosition = (~~(position / this.slideWidth) - swipeNext) * this.slideWidth;
+
+    if (snapPosition < maxAllowedW) snapPosition = maxAllowedW;
+    return snapPosition;
+  }
+
+  mapToRange(num, inMin, inMax, outMin, outMax) {
+    return ((num - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+  }
+
+  moveIndicator(currPos) {
+    if (!this.scrollbar || !this.scrollbarDrag) return;
+
+    const indicatorPos = this.scrollbar.offsetWidth - this.scrollbarDrag.offsetWidth;
+    const position = this.mapToRange(currPos, 0, -(this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth), 0, indicatorPos);
+
+    this.scrollbarDrag.style.transform = `translate3d(${position}px, 0, 0)`;
+  }
+
+  updateUI() {
+    this.slideWidth = this.calculateSlideWidth();
+    this.snapToSlide(0);
+  }
+
+  snapToSlide(direction) {
+    const slideWidth = this.slideWidth;
+    console.log(slideWidth);
+    const currentTransform = this.getTransform();
+    let newTransform = currentTransform - (slideWidth * direction);
+    const maxTransform = -(this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth);
+    newTransform = Math.max(newTransform, maxTransform);
+    newTransform = Math.min(newTransform, 0);
+
+    this.sliderWrapper.style.transition = 'transform 0.3s ease';
+    this.sliderWrapper.style.transform = `translate3d(${newTransform}px, 0, 0)`;
+    this.sliderWrapper.addEventListener('transitionend', () => {
+      this.sliderWrapper.style.transition = '';
+    });
+    this.updateScrollbar(newTransform);
+  }
+
+  getTransform() {
+    const transform = window.getComputedStyle(this.sliderWrapper).transform;
+    return transform !== 'none' ? parseFloat(transform.split(',')[4]) : 0;
+  }
+
+  updateScrollbar(transform) {
+    if(this.sliderWrapper.children.length <= this.calculateVisibleSlides()){
+      this.scrollbar.style.display = 'none';
+      return;
+    }else{
+      this.scrollbar.style.display = 'block';
+
+    }
+    if (this.scrollbar && this.scrollbarDrag) {
+      const maxScroll = this.sliderWrapper.scrollWidth - this.sliderContainer.offsetWidth;
+      const scrollbarWidth = this.scrollbar.offsetWidth;
+      const scrollbarDragWidth = (this.sliderContainer.offsetWidth / this.sliderWrapper.scrollWidth) * scrollbarWidth;
+      const scrollbarDragPos = (-transform / maxScroll) * (scrollbarWidth - scrollbarDragWidth);
+      this.scrollbarDrag.style.width = `${scrollbarDragWidth}px`;
+      this.scrollbarDrag.style.transform = `translate3d(${scrollbarDragPos}px, 0, 0)`;
+    }
+  }
 }
-
-
-
 // Function to populate slider with offers or products
 function populateSlider(sliderClass, dataKey, cardStructure) {
     // Load the main data
@@ -271,13 +325,14 @@ function populateSlider(sliderClass, dataKey, cardStructure) {
                         }
 
                         // Initialize the slider after populating the slides
-                        if (sliderWrapper.children.length <= 2) {
+                        if (sliderWrapper.children.length <= this) {
                             // Hide scrollbar and buttons, disable drag if slides are <= 3
                             document.querySelector(`${sliderClass} .slider-button-prev`).style.display = 'none';
                             document.querySelector(`${sliderClass} .slider-button-next`).style.display = 'none';
                             document.querySelector(`${sliderClass} .slider-scrollbar`).style.display = 'none';
                         } else {
-                            initializeSlider(sliderClass, dataKey, cardStructure);
+                            // initializeSlider(sliderClass, dataKey, cardStructure);
+                            new SwipeSlider(sliderClass)
                         }
                     })
                     .catch(error => {

@@ -1,3 +1,8 @@
+footer{
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 .footer_top {
     background-color: #fff;
     padding-top: 45px;
@@ -24,6 +29,7 @@
 .footer_dropdown-toggle {
     color: #141719;
     padding-bottom: 24px;
+    pointer-events: none;
     font-weight: 700;
 }
 .footer_dropdown-list {
@@ -144,6 +150,7 @@
         padding-bottom: 24px;
     }
     .footer_dropdown-toggle {
+        pointer-events: all;
         grid-column-gap: 36px;
         justify-content: space-between;
         align-items: center;

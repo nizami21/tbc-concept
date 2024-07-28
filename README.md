@@ -10,6 +10,7 @@ This project is built using plain JavaScript, HTML, and CSS to deliver a respons
 ## File Structure
 
 The project is organized as follows:
+
 ```bash
 .
 ├── assets
@@ -69,6 +70,7 @@ The project is organized as follows:
 │   └── slider.js
 └── README.md
 ```
+
 ## Setup
 
 To set up the project locally, simply download or clone the repository and open `index.html` in your preferred web browser.
@@ -83,3 +85,6 @@ To set up the project locally, simply download or clone the repository and open 
 ## Usage
 
 The project is a static website, so no additional setup or server is required. Open index.html directly in your browser to view the website.
+
+Github Pages Link:
+https://nizami21.github.io/tbc-concept/
