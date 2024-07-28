@@ -179,11 +179,17 @@
     .swiper-wrapper {
         padding-bottom: 28px;
     }
+    .swiper-buttons {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 479px) {
     .swiper-wrapper {
         padding-bottom: 20px;
+    }
+    .swiper-buttons {
+        display: none;
     }
 }
 
