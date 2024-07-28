@@ -7,6 +7,9 @@ TBC x USAID - React - technical assignment
 Project made for TBX x USAID - React course.
 This project is built using plain JavaScript, HTML, and CSS to deliver a responsive and dynamic web experience.
 
+Project has language change functionality.
+Mock API system to retrieve data and update the DOM accordingly.
+
 ## File Structure
 
 The project is organized as follows:
